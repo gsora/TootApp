@@ -66,7 +66,7 @@ public class Status implements Serializable {
     private Integer favouritesCount;
     @SerializedName("reblog")
     @Expose
-    private Object reblog;
+    private Status reblog;
     @SerializedName("favourited")
     @Expose
     private Object favourited;
@@ -214,7 +214,7 @@ public class Status implements Serializable {
         return reblog;
     }
 
-    public void setReblog(Object reblog) {
+    public void setReblog(Status reblog) {
         this.reblog = reblog;
     }
 
