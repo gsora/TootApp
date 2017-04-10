@@ -1,25 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginRight="16dp">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="16dp">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/avatar"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:srcCompat="@android:drawable/screen_background_light_transparent" />
+        app:civ_border_color="#90909090"
+        app:civ_border_width="1dp"/>
 
     <TextView
         android:id="@+id/status_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
+        android:layout_alignParentEnd="false"
         android:layout_below="@+id/status_author"
         android:layout_marginLeft="10dp"
         android:layout_toEndOf="@+id/avatar"
@@ -44,11 +47,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/status_text"
-        android:layout_marginBottom="10dp"
         android:layout_toEndOf="@+id/avatar"
-        android:text="TextView"
+        android:text=""
         android:textAlignment="textEnd"
-        android:textSize="12sp"
+        android:textSize="0sp"
         android:textStyle="normal|italic"
         android:visibility="invisible" />
 </RelativeLayout>
