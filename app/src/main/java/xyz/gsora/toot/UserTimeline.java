@@ -2,7 +2,6 @@ package xyz.gsora.toot;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -23,8 +22,12 @@ public class UserTimeline extends AppCompatActivity {
         Mocker m = new Mocker(this);
         statusList = (RecyclerView) findViewById(R.id.statuses_list);
         llm = new LinearLayoutManager(getApplicationContext());
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(statusList.getContext(),
-                llm.getOrientation());
+
+        CoolDivider dividerItemDecoration = new CoolDivider(statusList.getContext(),
+                llm.getOrientation(),
+                72,
+                R.id.avatar);
+
         statusList.setLayoutManager(llm);
         statusList.addItemDecoration(dividerItemDecoration);
         adpt = new StatusesListAdapter(m.getMockStatuses(), this.getApplicationContext());
