@@ -8,9 +8,10 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by gsora on 4/9/17.
@@ -55,24 +56,22 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
 
     private void setStatusViewTo(String author, String content, String avatar, String booster, StatusesListAdapter.ViewHolder holder) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            holder.statusAuthor.setText(Html.fromHtml(author, Html.FROM_HTML_MODE_COMPACT));
-            holder.status.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_COMPACT));
-        } else {
-            holder.statusAuthor.setText(Html.fromHtml(author));
-            holder.status.setText(Html.fromHtml(content));
+            holder.statusAuthor.setText(CoolHtml.html(author, Html.FROM_HTML_MODE_COMPACT));
+            holder.status.setText(CoolHtml.html(content, Html.FROM_HTML_MODE_COMPACT));
         }
 
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
 
         if (booster != null) {
+            RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
+            p.setMargins(0, 16, 0, 0);
+            holder.boostAuthor.setLayoutParams(p);
+
             holder.boostAuthor.setVisibility(View.VISIBLE);
             holder.boostAuthor.setText("Boosted by " + booster);
+            holder.boostAuthor.setTextSize(12.0f);
         }
     }
-
-    /*
-    Private methods
-     */
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -81,7 +80,7 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
         // each data item is just a string in this case
         public TextView statusAuthor;
         public TextView status;
-        public ImageView avatar;
+        public CircleImageView avatar;
         public TextView boostAuthor;
 
         public ViewHolder(View v) {
@@ -89,8 +88,14 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
             statusAuthor = (TextView) v.findViewById(R.id.status_author);
             status = (TextView) v.findViewById(R.id.status_text);
             status.setMovementMethod(LinkMovementMethod.getInstance());
-            avatar = (ImageView) v.findViewById(R.id.avatar);
+            avatar = (CircleImageView) v.findViewById(R.id.avatar);
             boostAuthor = (TextView) v.findViewById(R.id.boost_author);
         }
     }
+
+    /*
+    Private methods
+     */
+
+
 }
