@@ -8,10 +8,12 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by gsora on 4/9/17.
@@ -20,12 +22,17 @@ import de.hdodenhof.circleimageview.CircleImageView;
  */
 public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapter.ViewHolder> {
 
-    private Status[] statuses;
+    private ArrayList<Status> statuses;
     private Context parentCtx;
 
     public StatusesListAdapter(Status[] s, Context parentCtx) {
-        statuses = s;
+        statuses = new ArrayList<Status>(Arrays.asList(s));
         this.parentCtx = parentCtx;
+    }
+
+    public void UpdateStatuses(Status[] s) {
+        statuses.addAll(Arrays.asList(s));
+        notifyDataSetChanged();
     }
 
     @Override
@@ -38,7 +45,7 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
 
     @Override
     public void onBindViewHolder(StatusesListAdapter.ViewHolder holder, int position) {
-        Status s = statuses[position];
+        Status s = statuses.get(position);
         Status sb = (Status) s.getReblog();
 
         if (sb != null) { // this is a boost
@@ -51,7 +58,7 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
 
     @Override
     public int getItemCount() {
-        return statuses.length;
+        return statuses.size();
     }
 
     private void setStatusViewTo(String author, String content, String avatar, String booster, StatusesListAdapter.ViewHolder holder) {
@@ -63,9 +70,9 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
 
         if (booster != null) {
-            RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
-            p.setMargins(0, 16, 0, 0);
-            holder.boostAuthor.setLayoutParams(p);
+            //RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
+            //p.setMargins(0, 16, 0, 0);
+            //holder.boostAuthor.setLayoutParams(p);
 
             holder.boostAuthor.setVisibility(View.VISIBLE);
             holder.boostAuthor.setText("Boosted by " + booster);
@@ -96,6 +103,5 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
     /*
     Private methods
      */
-
 
 }
