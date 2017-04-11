@@ -11,7 +11,9 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="0dp"
         android:layout_marginRight="0dp"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,7 +26,6 @@
                 android:layout_height="wrap_content"
                 android:background="@color/whiteClear"
                 android:elevation="4dp"
-                android:onClick="tappedView"
                 android:orientation="vertical">
 
                 <RelativeLayout
