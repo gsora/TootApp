@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.View;
 
 public class UserTimeline extends AppCompatActivity {
 
@@ -19,19 +21,22 @@ public class UserTimeline extends AppCompatActivity {
         setContentView(R.layout.activity_user_timeline);
         setTitle("Timeline");
 
-        Mocker m = new Mocker(this);
+        final Mocker m = new Mocker(this);
         statusList = (RecyclerView) findViewById(R.id.statuses_list);
         llm = new LinearLayoutManager(getApplicationContext());
 
-        CoolDivider dividerItemDecoration = new CoolDivider(statusList.getContext(),
+        /*CoolDivider dividerItemDecoration = new CoolDivider(statusList.getContext(),
                 llm.getOrientation(),
                 72,
-                R.id.avatar);
+                R.id.avatar);*/
 
         statusList.setLayoutManager(llm);
-        statusList.addItemDecoration(dividerItemDecoration);
+        //statusList.addItemDecoration(dividerItemDecoration);
         adpt = new StatusesListAdapter(m.getMockStatuses(), this.getApplicationContext());
         statusList.setAdapter(adpt);
+    }
 
+    public void tappedView(View v) {
+        Log.d(TAG, "tapped " + v.toString());
     }
 }
