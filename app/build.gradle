@@ -38,4 +38,11 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.google.android.gms:play-services-ads:10.2.1'
     compile 'de.hdodenhof:circleimageview:2.1.0'
+    compile 'frankiesardo:icepick:3.2.0'
+    provided 'frankiesardo:icepick-processor:3.2.0'
+
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    compile 'com.github.GrenderG:Toasty:1.1.4'
+    compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:2.0.1-rc1'
 }
