@@ -6,11 +6,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class UserTimeline extends AppCompatActivity {
 
     private static final String TAG = UserTimeline.class.getSimpleName();
 
+    @BindView(R.id.statuses_list)
     RecyclerView statusList;
     StatusesListAdapter adpt;
     LinearLayoutManager llm;
@@ -20,9 +23,9 @@ public class UserTimeline extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_timeline);
         setTitle("Timeline");
+        ButterKnife.bind(this);
 
         final Mocker m = new Mocker(this);
-        statusList = (RecyclerView) findViewById(R.id.statuses_list);
         llm = new LinearLayoutManager(getApplicationContext());
 
         /*CoolDivider dividerItemDecoration = new CoolDivider(statusList.getContext(),

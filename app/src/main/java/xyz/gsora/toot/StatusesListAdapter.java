@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import com.squareup.picasso.Picasso;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -85,18 +87,19 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public TextView statusAuthor;
-        public TextView status;
-        public CircleImageView avatar;
-        public TextView boostAuthor;
+        public @BindView(R.id.status_author)
+        TextView statusAuthor;
+        public @BindView(R.id.status_text)
+        TextView status;
+        public @BindView(R.id.avatar)
+        CircleImageView avatar;
+        public @BindView(R.id.boost_author)
+        TextView boostAuthor;
 
         public ViewHolder(View v) {
             super(v);
-            statusAuthor = (TextView) v.findViewById(R.id.status_author);
-            status = (TextView) v.findViewById(R.id.status_text);
+            ButterKnife.bind(this, v);
             status.setMovementMethod(LinkMovementMethod.getInstance());
-            avatar = (CircleImageView) v.findViewById(R.id.avatar);
-            boostAuthor = (TextView) v.findViewById(R.id.boost_author);
         }
     }
 
