@@ -1,6 +1,8 @@
 package xyz.gsora.toot;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,8 @@ public class UserTimeline extends AppCompatActivity {
 
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
+    @BindView(R.id.newToot)
+    FloatingActionButton newTootFAB;
     StatusesListAdapter adpt;
     LinearLayoutManager llm;
 
@@ -37,6 +41,15 @@ public class UserTimeline extends AppCompatActivity {
         //statusList.addItemDecoration(dividerItemDecoration);
         adpt = new StatusesListAdapter(m.getMockStatuses(), this.getApplicationContext());
         statusList.setAdapter(adpt);
+
+        // Setup FAB action
+        newTootFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(UserTimeline.this, SendToot.class);
+                startActivity(i);
+            }
+        });
     }
 
     public void tappedView(View v) {
