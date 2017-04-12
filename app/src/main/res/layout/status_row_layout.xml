@@ -46,7 +46,7 @@
                         tools:ignore="RtlSymmetry"/>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="10dp"
@@ -74,25 +74,13 @@
                             android:textStyle="normal|italic"/>
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/boost_author"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="16dp"
-                        android:text=""
-                        android:textAlignment="textEnd"
-                        android:textSize="0sp"
-                        android:textStyle="normal|italic"
-                        android:visibility="invisible"/>
-
                 </RelativeLayout>
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                               android:layout_width="match_parent"
-                              android:layout_height="wrap_content"
-                              android:background="@color/whiteClear">
+                              android:layout_height="match_parent"
+                              android:background="@color/whiteClear"
+                              android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/status_text"
@@ -104,8 +92,20 @@
                         android:layout_marginTop="4dp"
                         android:text="TextView"
                         android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/boost_author"
+                        android:layout_width="385dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:text=""
+                        android:textAlignment="textEnd"
+                        android:textSize="0sp"
+                        android:textStyle="normal|italic"
+                        android:visibility="invisible"/>
                 </LinearLayout>
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -114,42 +114,42 @@
                 android:elevation="2dp"
                 android:orientation="horizontal">
 
-                <Button
+                <ImageButton
                     android:id="@+id/reply"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Reply"/>
+                    android:src="@drawable/ic_reply_black_24dp"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/star"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Star"/>
+                    android:src="@drawable/ic_stars_black_24dp"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/boost"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="boost"/>
+                    android:src="@drawable/ic_autorenew_black_24dp"/>
 
                 <Space
                     android:layout_width="125dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
 
-                <Button
+                <ImageButton
                     android:id="@+id/more"
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="more"/>
+                    android:src="@drawable/ic_more_horiz_black_24dp"/>
 
             </LinearLayout>
         </LinearLayout>
