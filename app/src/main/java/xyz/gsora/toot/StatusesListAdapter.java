@@ -8,6 +8,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,6 +24,8 @@ import java.util.Arrays;
  * Custom adapter, useful for listing some statuses.
  */
 public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapter.ViewHolder> {
+
+    private static final String TAG = StatusesListAdapter.class.getSimpleName();
 
     private ArrayList<Status> statuses;
     private Context parentCtx;
@@ -51,9 +54,9 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
         Status sb = (Status) s.getReblog();
 
         if (sb != null) { // this is a boost
-            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), holder);
+            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder);
         } else {
-            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, holder);
+            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder);
         }
 
     }
@@ -63,7 +66,7 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
         return statuses.size();
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, StatusesListAdapter.ViewHolder holder) {
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, StatusesListAdapter.ViewHolder holder) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
             holder.statusAuthor.setText(CoolHtml.html(author, Html.FROM_HTML_MODE_COMPACT));
             holder.status.setText(CoolHtml.html(content, Html.FROM_HTML_MODE_COMPACT));
@@ -72,14 +75,23 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
 
         if (booster != null) {
-            //RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
-            //p.setMargins(0, 16, 0, 0);
-            //holder.boostAuthor.setLayoutParams(p);
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
+            p.setMargins(0, 0, 0, 16);
+            holder.boostAuthor.setLayoutParams(p);
 
             holder.boostAuthor.setVisibility(View.VISIBLE);
             holder.boostAuthor.setText("Boosted by " + booster);
             holder.boostAuthor.setTextSize(12.0f);
         }
+
+        /*SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-ddTHH:MM:SS");
+        try {
+            Log.d(TAG, fmt.parse(timestamp).toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
+
+        holder.timestamp.setText(timestamp);
     }
 
     // Provide a reference to the views for each data item
@@ -87,14 +99,16 @@ public class StatusesListAdapter extends RecyclerView.Adapter<StatusesListAdapte
     // you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
-        public @BindView(R.id.status_author)
+        @BindView(R.id.status_author)
         TextView statusAuthor;
-        public @BindView(R.id.status_text)
+        @BindView(R.id.status_text)
         TextView status;
-        public @BindView(R.id.avatar)
+        @BindView(R.id.avatar)
         CircleImageView avatar;
-        public @BindView(R.id.boost_author)
+        @BindView(R.id.boost_author)
         TextView boostAuthor;
+        @BindView(R.id.timestamp)
+        TextView timestamp;
 
         public ViewHolder(View v) {
             super(v);
