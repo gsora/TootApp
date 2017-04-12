@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto"
-      android:background="@android:color/black"
-      app:bbn_badgeColor="#FFFF0000"
-      app:bbn_rippleColor="#33ffffff">
+      android:background="@color/whiteClear"
+      app:bbn_itemColorActive="@color/colorPrimary"
+      app:bbn_itemColorInactive="@color/statusHoverBottom">
     <item
-        android:id="@+id/bbn_item1"
-        android:color="@color/colorPrimary"
-        android:icon="@drawable/ic_cloud_off_white_24dp"
-        android:title="Cloud Sync"/>
+        android:id="@+id/user_timeline"
+        android:icon="@drawable/ic_home_primarydark_24dp"
+        android:title="Timeline"/>
     <item
-        android:id="@+id/bbn_item2"
-        android:color="@android:color/holo_green_dark"
-        android:icon="@drawable/ic_cast_connected_white_24dp"
-        android:title="Chromecast"/>
+        android:id="@+id/local_timeline"
+        android:icon="@drawable/ic_group_primarydark_24dp"
+        android:title="Local timeline"/>
     <item
-        android:id="@+id/bbn_item3"
-        android:color="@android:color/holo_orange_dark"
-        android:icon="@drawable/ic_mail_white_24dp"
-        android:title="Mail"/>
+        android:id="@+id/federated_timeline"
+        android:icon="@drawable/ic_language_primarydark_24dp"
+        android:title="Federated timeline"/>
     <item
-        android:id="@+id/action4"
-        android:color="#FF5252"
-        android:icon="@drawable/ic_format_list_numbered_white_24dp"
-        android:title="List"/>
+        android:id="@+id/favorites"
+        android:icon="@drawable/ic_star_primarydark_24dp"
+        android:title="Favorites"/>
 </menu>
