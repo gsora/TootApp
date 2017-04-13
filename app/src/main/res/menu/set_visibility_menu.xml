@@ -22,7 +22,7 @@
 
     <item
         android:id="@+id/visibility_direct"
-        android:icon="@drawable/ic_attachment_black_24dp"
+        android:icon="@drawable/ic_local_post_office_black_24dp"
         android:title="Direct"
         app:showAsAction="ifRoom"/>
 </menu>
