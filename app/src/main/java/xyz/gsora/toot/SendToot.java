@@ -5,11 +5,17 @@ import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuPopupHelper;
+import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +50,10 @@ public class SendToot extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.send_toot_menu, menu);
         send_toot_menu = menu.findItem(R.id.send_toot_button);
+
+        MenuPopupHelper menuHelper = new MenuPopupHelper(SendToot.this, (MenuBuilder) menu, ((MenuBuilder) menu).getHeaderView());
+        menuHelper.setForceShowIcon(true);
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -96,5 +106,24 @@ public class SendToot extends AppCompatActivity {
         };
 
         toot_content.addTextChangedListener(characterWatcher);
+    }
+
+    public void showVisibilityMenu(View v) {
+        final ImageButton rV = (ImageButton) v;
+        PopupMenu popup = new PopupMenu(SendToot.this, v);
+        popup.getMenuInflater().inflate(R.menu.set_visibility_menu, popup.getMenu());
+
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Log.d(TAG, String.valueOf(item.getItemId()));
+                rV.setImageDrawable(item.getIcon());
+                return true;
+            }
+        });
+
+        MenuPopupHelper menuHelper = new MenuPopupHelper(SendToot.this, (MenuBuilder) popup.getMenu(), v);
+        menuHelper.setForceShowIcon(true);
+        menuHelper.show();
     }
 }
