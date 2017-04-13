@@ -6,6 +6,6 @@
         android:id="@+id/send_toot_button"
         android:icon="@drawable/ic_send_white_24dp"
         android:title=""
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         />
 </menu>
