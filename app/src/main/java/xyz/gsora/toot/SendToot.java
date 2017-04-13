@@ -11,14 +11,17 @@ import android.support.v7.widget.PopupMenu;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 
 public class SendToot extends AppCompatActivity {
 
@@ -115,6 +118,23 @@ public class SendToot extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 Log.d(TAG, String.valueOf(item.getItemId()));
                 rV.setImageDrawable(item.getIcon());
+                switch(item.getItemId()) {
+                    case R.id.visibility_public:
+                        buildToasty("Your post will appear in public timelines").show();
+                        break;
+                    case R.id.visibility_unlisted:
+                        buildToasty("Your post will not appear public timelines").show();
+                        break;
+                    case R.id.visibility_private:
+                        buildToasty("Your post will appear to followers only").show();
+                        break;
+                    case R.id.visibility_direct:
+                        buildToasty("Your post will appear to mentioned user only").show();
+                        break;
+                    default:
+                        Log.d(TAG, "memes");
+
+                }
                 return true;
             }
         });
@@ -122,5 +142,11 @@ public class SendToot extends AppCompatActivity {
         MenuPopupHelper menuHelper = new MenuPopupHelper(SendToot.this, (MenuBuilder) popup.getMenu(), v);
         menuHelper.setForceShowIcon(true);
         menuHelper.show();
+    }
+
+    private Toast buildToasty(String s) {
+        Toast t = Toasty.info(SendToot.this, s, Toast.LENGTH_SHORT, true);
+        t.setGravity(Gravity.CENTER_HORIZONTAL|Gravity.TOP, 0, 0);
+        return t;
     }
 }
