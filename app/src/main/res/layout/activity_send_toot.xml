@@ -33,6 +33,16 @@
             android:id="@+id/characters_remaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="500"/>
+
+        <ImageButton
+            android:id="@+id/set_visibility_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:background="@null"
+            android:onClick="showVisibilityMenu"
+            android:src="@drawable/ic_language_black_24dp"/>
     </LinearLayout>
 </LinearLayout>
