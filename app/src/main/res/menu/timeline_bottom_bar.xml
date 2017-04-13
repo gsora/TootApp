@@ -16,11 +16,11 @@
     <item
         android:id="@+id/local_timeline"
         android:icon="@drawable/ic_group_primarydark_24dp"
-        android:title="Local timeline"/>
+        android:title="Local"/>
     <item
         android:id="@+id/federated_timeline"
         android:icon="@drawable/ic_language_primarydark_24dp"
-        android:title="Federated timeline"/>
+        android:title="Federated"/>
     <item
         android:id="@+id/favorites"
         android:icon="@drawable/ic_star_primarydark_24dp"
