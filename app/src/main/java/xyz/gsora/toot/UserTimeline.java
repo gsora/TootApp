@@ -13,9 +13,13 @@ import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import java.util.Locale;
+
 public class UserTimeline extends AppCompatActivity {
 
     private static final String TAG = UserTimeline.class.getSimpleName();
+
+    private static String systemLocale;
 
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
@@ -32,6 +36,8 @@ public class UserTimeline extends AppCompatActivity {
         setContentView(R.layout.activity_user_timeline);
         ButterKnife.bind(this);
 
+        systemLocale = Locale.getDefault().getLanguage();
+
         final Mocker m = new Mocker(this);
         llm = new LinearLayoutManager(getApplicationContext());
 
@@ -42,7 +48,7 @@ public class UserTimeline extends AppCompatActivity {
 
         statusList.setLayoutManager(llm);
         //statusList.addItemDecoration(dividerItemDecoration);
-        adpt = new StatusesListAdapter(m.getMockStatuses(), this.getApplicationContext());
+        adpt = new StatusesListAdapter(m.getMockStatuses(), this.getApplicationContext(), systemLocale);
         statusList.setAdapter(adpt);
 
         // Setup FAB action
