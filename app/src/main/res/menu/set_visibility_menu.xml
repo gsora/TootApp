@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/visiblity_public"
+        android:icon="@drawable/ic_language_black_24dp"
+        android:title="Public"/>
+
+    <item
+        android:id="@+id/visibility_unlisted"
+        android:icon="@drawable/ic_lock_open_black_24dp"
+        android:title="Unlisted"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/visibility_private"
+        android:icon="@drawable/ic_lock_outline_black_24dp"
+        android:title="Private"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/visibility_direct"
+        android:icon="@drawable/ic_attachment_black_24dp"
+        android:title="Direct"
+        app:showAsAction="ifRoom"/>
+</menu>
