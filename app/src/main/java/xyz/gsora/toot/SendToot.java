@@ -51,9 +51,6 @@ public class SendToot extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.send_toot_menu, menu);
         send_toot_menu = menu.findItem(R.id.send_toot_button);
 
-        MenuPopupHelper menuHelper = new MenuPopupHelper(SendToot.this, (MenuBuilder) menu, ((MenuBuilder) menu).getHeaderView());
-        menuHelper.setForceShowIcon(true);
-
         return super.onCreateOptionsMenu(menu);
     }
 

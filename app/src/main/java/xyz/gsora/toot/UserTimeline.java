@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +21,8 @@ public class UserTimeline extends AppCompatActivity {
     RecyclerView statusList;
     @BindView(R.id.newToot)
     FloatingActionButton newTootFAB;
+
+    MenuItem toot_settings_button;
     StatusesListAdapter adpt;
     LinearLayoutManager llm;
 
@@ -26,7 +30,6 @@ public class UserTimeline extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_timeline);
-        setTitle("Timeline");
         ButterKnife.bind(this);
 
         final Mocker m = new Mocker(this);
@@ -50,6 +53,15 @@ public class UserTimeline extends AppCompatActivity {
                 startActivity(i);
             }
         });
+    }
+
+    // add the settings button
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings_menu_timeline, menu);
+        toot_settings_button = menu.findItem(R.id.toot_settings_button);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void tappedView(View v) {
