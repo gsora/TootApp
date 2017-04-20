@@ -1,0 +1,95 @@
+package xyz.gsora.toot;
+
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+/**
+ * Created by gsora on 4/20/17.
+ * <p>
+ * A class containing application-wide methods.
+ */
+public class Toot extends Application {
+
+    private static Context context;
+
+    public static Context getAppContext() {
+        return Toot.context;
+    }
+
+    public static SharedPreferences prefsFactory() {
+        return getAppContext().getSharedPreferences("TOOT_APP", Context.MODE_PRIVATE);
+    }
+
+    public static SharedPreferences.Editor editorFactory() {
+        return prefsFactory().edit();
+    }
+
+    public static Boolean hasLoggedIn() {
+        return prefsFactory().getBoolean("LOGGED_IN", false);
+    }
+
+    public static String getUsername() {
+        return prefsFactory().getString("USERNAME", null);
+    }
+
+    public static String getInstanceURI() {
+        return prefsFactory().getString("INSTANCE", null);
+    }
+
+    public static String getInstanceURL() {
+        return "https://" + getInstanceURI();
+    }
+
+    public static void saveUsernameInstanceTuple(UserTuple t) {
+        SharedPreferences.Editor se = editorFactory();
+        se.putString("USERNAME", t.getUser());
+        se.putString("INSTANCE", t.getInstanceURI());
+        se.apply();
+    }
+
+    public static void saveClientID(String clientID) {
+        SharedPreferences.Editor se = editorFactory();
+        se.putString("CLIENT_ID", clientID);
+        se.apply();
+    }
+
+    public static String getClientID() {
+        return prefsFactory().getString("CLIENT_ID", null);
+    }
+
+    public static void saveClientSecret(String clientSecret) {
+        SharedPreferences.Editor se = editorFactory();
+        se.putString("CLIENT_SECRET", clientSecret);
+        se.apply();
+    }
+
+    public static String getClientSecret() {
+        return prefsFactory().getString("CLIENT_SECRET", null);
+    }
+
+    public static void saveOAuthAccessToken(String accessToken) {
+        SharedPreferences.Editor se = editorFactory();
+        se.putString("ACCESS_TOKEN", accessToken);
+        se.apply();
+    }
+
+    public static String getOAuthAccessToken() {
+        return prefsFactory().getString("ACCESS_TOKEN", null);
+    }
+
+    public static void saveOAuthRefreshToken(String refreshToken) {
+        SharedPreferences.Editor se = editorFactory();
+        se.putString("REFRESH_TOKEN", refreshToken);
+        se.apply();
+    }
+
+    public static String getOAuthRefreshToken() {
+        return prefsFactory().getString("REFRESH_TOKEN", null);
+    }
+
+    public void onCreate() {
+        super.onCreate();
+        Toot.context = getApplicationContext();
+    }
+}
