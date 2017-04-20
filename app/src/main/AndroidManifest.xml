@@ -3,6 +3,7 @@
           package="xyz.gsora.toot">
 
     <application
+        android:name=".Toot"
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,15 +11,33 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".UserTimeline">
+        </activity>
+        <activity
+            android:name=".SendToot"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:host="xyz.gsora.toot"
+                    android:scheme="https"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".DeciderActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".SendToot"
-            android:windowSoftInputMode="adjustResize">
         </activity>
     </application>
 
