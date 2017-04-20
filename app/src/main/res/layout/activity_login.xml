@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="xyz.gsora.toot.LoginActivity">
+
+
+    <EditText
+        android:id="@+id/userAtInstance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:hint="user@instance.com"
+        android:inputType="text"
+        android:textAlignment="center"/>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userAtInstance"
+        android:layout_centerHorizontal="true"
+        android:enabled="false"
+        android:onClick="onLoginClick"
+        android:text="Login"/>
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/userAtInstance"
+        android:layout_alignStart="@+id/userAtInstance"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/progressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/login"
+        android:layout_alignTop="@+id/progress"
+        android:layout_marginTop="15dp"
+        android:text=""
+        android:visibility="invisible"/>
+
+</RelativeLayout>
