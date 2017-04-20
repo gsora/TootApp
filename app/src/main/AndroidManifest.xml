@@ -18,7 +18,8 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"
+            android:label="@string/login_view_label"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -32,7 +33,9 @@
                     android:scheme="https"/>
             </intent-filter>
         </activity>
-        <activity android:name=".DeciderActivity">
+        <activity
+            android:name=".DeciderActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
