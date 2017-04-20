@@ -6,7 +6,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -41,23 +40,15 @@ public class UserTimeline extends AppCompatActivity {
         final Mocker m = new Mocker(this);
         llm = new LinearLayoutManager(getApplicationContext());
 
-        /*CoolDivider dividerItemDecoration = new CoolDivider(statusList.getContext(),
-                llm.getOrientation(),
-                72,
-                R.id.avatar);*/
 
         statusList.setLayoutManager(llm);
-        //statusList.addItemDecoration(dividerItemDecoration);
         adpt = new StatusesListAdapter(m.getMockStatuses(), this.getApplicationContext(), systemLocale);
         statusList.setAdapter(adpt);
 
         // Setup FAB action
-        newTootFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        newTootFAB.setOnClickListener((View v) -> {
                 Intent i = new Intent(UserTimeline.this, SendToot.class);
                 startActivity(i);
-            }
         });
     }
 
@@ -68,9 +59,5 @@ public class UserTimeline extends AppCompatActivity {
         toot_settings_button = menu.findItem(R.id.toot_settings_button);
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    public void tappedView(View v) {
-        Log.d(TAG, "tapped " + v.toString());
     }
 }
