@@ -29,6 +29,10 @@ public class Toot extends Application {
         return prefsFactory().getBoolean("LOGGED_IN", false);
     }
 
+    public static void markLoggedIn() {
+        editorFactory().putBoolean("LOGGED_IN", true).apply();
+    }
+
     public static String getUsername() {
         return prefsFactory().getString("USERNAME", null);
     }
