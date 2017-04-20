@@ -1,6 +1,7 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.AppCreationResponse;
+import MastodonTypes.OAuthResponse;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,8 +33,6 @@ public class LoginActivity extends AppCompatActivity {
     Button login;
     @BindView(R.id.progress)
     ProgressBar progress;
-    @BindView(R.id.progressText)
-    TextView progressText;
 
     private UserTuple ut;
     private Mastodon m;
@@ -48,18 +47,28 @@ public class LoginActivity extends AppCompatActivity {
         m = Mastodon.getInstance();
         setupUserStringTest();
 
+        // I truly don't understand why I need to set these here, while they're already been set via XML.
+        progress.setVisibility(View.INVISIBLE);
+        login.setEnabled(false);
+
         // parse intent data if any (aka if the browser redirected here)
         Intent intent = getIntent();
         Uri uri = intent.getData();
-        if (uri == null || !uri.toString().startsWith(m.REDIRECT_URI)) {
+        if (uri == null || !uri.toString().startsWith(Mastodon.REDIRECT_URI) || Toot.hasLoggedIn()) {
             // TODO: actually handle the case where no data comes from OAuth
-            handleApplicationCreationError(new Exception("!!! ERROR !!! --> OAuth data was null!"));
+            handleApplicationCreationError(new Exception("!!! ERROR !!! --> OAuth code data was null!"));
         } else {
+            userAtInstance.setEnabled(false);
+            login.setEnabled(false);
+            progress.setVisibility(View.VISIBLE);
             handleOAuthReply(uri);
         }
 
     }
 
+    /**
+     * Setup the user/instance URI validator.
+     */
     private void setupUserStringTest() {
         userAtInstance.addTextChangedListener(new TextWatcher() {
             private final Pattern USER_INSTANCE_PATTERN = Pattern.compile("(\\w+)@(\\w+\\.\\w+)");
@@ -93,7 +102,14 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Listener method for clicks on the "login" button.
+     *
+     * @param view the button who fired the event.
+     */
     public void onLoginClick(View view) {
+        // start some animations
+        progress.setVisibility(View.VISIBLE);
 
         // disable all the UI components
         userAtInstance.setEnabled(false);
@@ -118,11 +134,6 @@ public class LoginActivity extends AppCompatActivity {
      * @param acr a valid AppCreationResponse instance
      */
     private void handleApplicationCreationRequest(AppCreationResponse acr) {
-        // start some animation
-        progress.setVisibility(View.VISIBLE);
-        progressText.setVisibility(View.VISIBLE);
-        progressText.setText("Generating application tokens...");
-
         // since we successfully created an application, we can save its data and the UserTuple
         Toot.saveUsernameInstanceTuple(ut);
         Toot.saveClientID(acr.getClientId());
@@ -132,10 +143,9 @@ public class LoginActivity extends AppCompatActivity {
         Uri destination = Uri.parse("https://" + Toot.getInstanceURI() + "/oauth/authorize").buildUpon()
                 .appendQueryParameter("client_id", acr.getClientId())
                 .appendQueryParameter("response_type", "code")
-                .appendQueryParameter("redirect_uri", m.REDIRECT_URI)
+                .appendQueryParameter("redirect_uri", Mastodon.REDIRECT_URI)
                 .build();
 
-        progressText.setText("Redirecting to browser authentication...");
         Intent browser = new Intent(Intent.ACTION_VIEW, destination);
         startActivity(browser);
     }
@@ -149,15 +159,17 @@ public class LoginActivity extends AppCompatActivity {
         // TODO: fix my dumbness
         Log.d(TAG, "application creation error: " + error.toString());
 
-        progress.setVisibility(View.INVISIBLE);
-        progressText.setVisibility(View.INVISIBLE);
         userAtInstance.setEnabled(true);
         login.setEnabled(true);
     }
 
 
+    /**
+     * Handle a successful OAuth code request.
+     *
+     * @param uri object containing the URL-encoded code.
+     */
     private void handleOAuthReply(Uri uri) {
-        progressText.setText("Requesting OAuth authentication tokens...");
         String code = null;
         try {
             code = uri.getQueryParameter("code");
@@ -168,5 +180,45 @@ public class LoginActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "oauth reply code: " + code);
         }
+
+        // requesting OAuth tokens
+        Observable<OAuthResponse> oauth = m.requestOAuthTokens(code);
+        oauth
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        this::handleSuccessfulOAuthReply,
+                        this::handleUnsuccessfulOAuthReply
+                );
+    }
+
+    /**
+     * Handle a successful OAuth response.
+     *
+     * @param oAuthResponse the successful OAuth response.
+     */
+    private void handleSuccessfulOAuthReply(OAuthResponse oAuthResponse) {
+        Toot.markLoggedIn();
+        Toot.saveOAuthAccessToken(oAuthResponse.getAccessToken());
+        Toot.saveOAuthRefreshToken(oAuthResponse.getRefreshToken());
+
+        // send everyone to the main view!
+        Intent timeline = new Intent(this, UserTimeline.class);
+        startActivity(timeline);
+        finish();
+    }
+
+    /**
+     * Handle an unsuccessful OAuth response
+     *
+     * @param error the error fired from the network stack.
+     */
+    private void handleUnsuccessfulOAuthReply(Throwable error) {
+        // TODO: fix my dumbness
+        Log.d(TAG, "OAuth error: " + error.toString());
+
+        userAtInstance.setEnabled(true);
+        login.setEnabled(true);
+        progress.setVisibility(View.INVISIBLE);
     }
 }
