@@ -31,22 +31,11 @@
 
     <ProgressBar
         android:id="@+id/progress"
-        style="?android:attr/progressBarStyle"
+        style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/userAtInstance"
-        android:layout_alignStart="@+id/userAtInstance"
-        android:indeterminate="true"
-        android:visibility="invisible"/>
-
-    <TextView
-        android:id="@+id/progressText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/login"
-        android:layout_alignTop="@+id/progress"
-        android:layout_marginTop="15dp"
-        android:text=""
-        android:visibility="invisible"/>
+        android:layout_centerHorizontal="true"
+        tools:visibility="invisible"/>
 
 </RelativeLayout>
