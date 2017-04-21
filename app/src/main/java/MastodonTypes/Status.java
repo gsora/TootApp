@@ -3,82 +3,104 @@ package MastodonTypes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
-import java.util.List;
 
-public class Status implements Serializable {
+public class Status extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = 4983372382391510544L;
+    @PrimaryKey
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private long id;
+
     @SerializedName("created_at")
     @Expose
     private String createdAt;
+
     @SerializedName("in_reply_to_id")
     @Expose
-    private Object inReplyToId;
+    private String inReplyToId;
+
     @SerializedName("in_reply_to_account_id")
     @Expose
-    private Object inReplyToAccountId;
+    private String inReplyToAccountId;
+
     @SerializedName("sensitive")
     @Expose
     private Boolean sensitive;
+
     @SerializedName("spoiler_text")
     @Expose
     private String spoilerText;
+
     @SerializedName("visibility")
     @Expose
     private String visibility;
+
     @SerializedName("application")
     @Expose
     private Application application;
+
     @SerializedName("account")
     @Expose
     private Account account;
+
     @SerializedName("media_attachments")
     @Expose
-    private List<MediaAttachment> mediaAttachments = null;
+    private RealmList<MediaAttachment> mediaAttachments = null;
+
     @SerializedName("mentions")
     @Expose
-    private List<Object> mentions = null;
+    private RealmList<Mention> mentions = null;
+
     @SerializedName("tags")
     @Expose
-    private List<Object> tags = null;
+    private RealmList<Tag> tags = null;
+
     @SerializedName("uri")
     @Expose
     private String uri;
+
     @SerializedName("content")
     @Expose
     private String content;
+
     @SerializedName("url")
     @Expose
     private String url;
+
     @SerializedName("reblogs_count")
     @Expose
     private Integer reblogsCount;
+
     @SerializedName("favourites_count")
     @Expose
     private Integer favouritesCount;
+
     @SerializedName("reblog")
     @Expose
     private Status reblog;
+
     @SerializedName("favourited")
     @Expose
-    private Object favourited;
+    private Boolean favourited;
+
     @SerializedName("reblogged")
     @Expose
-    private Object reblogged;
+    private Boolean reblogged;
 
-    public Integer getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -94,15 +116,15 @@ public class Status implements Serializable {
         return inReplyToId;
     }
 
-    public void setInReplyToId(Object inReplyToId) {
+    public void setInReplyToId(String inReplyToId) {
         this.inReplyToId = inReplyToId;
     }
 
-    public Object getInReplyToAccountId() {
+    public String getInReplyToAccountId() {
         return inReplyToAccountId;
     }
 
-    public void setInReplyToAccountId(Object inReplyToAccountId) {
+    public void setInReplyToAccountId(String inReplyToAccountId) {
         this.inReplyToAccountId = inReplyToAccountId;
     }
 
@@ -146,27 +168,27 @@ public class Status implements Serializable {
         this.account = account;
     }
 
-    public List<MediaAttachment> getMediaAttachments() {
+    public RealmList<MediaAttachment> getMediaAttachments() {
         return mediaAttachments;
     }
 
-    public void setMediaAttachments(List<MediaAttachment> mediaAttachments) {
+    public void setMediaAttachments(RealmList<MediaAttachment> mediaAttachments) {
         this.mediaAttachments = mediaAttachments;
     }
 
-    public List<Object> getMentions() {
+    public RealmList<Mention> getMentions() {
         return mentions;
     }
 
-    public void setMentions(List<Object> mentions) {
+    public void setMentions(RealmList<Mention> mentions) {
         this.mentions = mentions;
     }
 
-    public List<Object> getTags() {
+    public RealmList<Tag> getTags() {
         return tags;
     }
 
-    public void setTags(List<Object> tags) {
+    public void setTags(RealmList<Tag> tags) {
         this.tags = tags;
     }
 
@@ -210,7 +232,7 @@ public class Status implements Serializable {
         this.favouritesCount = favouritesCount;
     }
 
-    public Object getReblog() {
+    public Status getReblog() {
         return reblog;
     }
 
@@ -218,19 +240,19 @@ public class Status implements Serializable {
         this.reblog = reblog;
     }
 
-    public Object getFavourited() {
+    public Boolean getFavourited() {
         return favourited;
     }
 
-    public void setFavourited(Object favourited) {
+    public void setFavourited(Boolean favourited) {
         this.favourited = favourited;
     }
 
-    public Object getReblogged() {
+    public Boolean getReblogged() {
         return reblogged;
     }
 
-    public void setReblogged(Object reblogged) {
+    public void setReblogged(Boolean reblogged) {
         this.reblogged = reblogged;
     }
 
