@@ -3,6 +3,7 @@ package xyz.gsora.toot;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import io.realm.Realm;
 
 /**
  * Created by gsora on 4/20/17.
@@ -105,9 +106,14 @@ public class Toot extends Application {
         return s.toString();
     }
 
+    public static String buildBearer() {
+        return "Bearer " + getOAuthAccessToken();
+    }
+
     public void onCreate() {
         super.onCreate();
         Toot.context = getApplicationContext();
+        Realm.init(context);
     }
 
 }

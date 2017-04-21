@@ -9,6 +9,7 @@ android {
         applicationId "xyz.gsora.toot"
         minSdkVersion 21
         targetSdkVersion 25
+        multiDexEnabled true
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -57,5 +58,9 @@ dependencies {
     compile 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    compile 'com.github.thorbenprimke:realm-recyclerview:0.9.25'
+    compile 'io.realm:android-adapters:2.0.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.7.0'
 
 }

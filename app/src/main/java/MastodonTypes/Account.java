@@ -3,13 +3,14 @@ package MastodonTypes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import io.realm.RealmObject;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
-public class Account implements Serializable {
+public class Account extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = -7201177137522198661L;
     @SerializedName("id")
