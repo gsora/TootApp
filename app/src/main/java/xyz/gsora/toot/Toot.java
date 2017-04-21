@@ -92,8 +92,22 @@ public class Toot extends Application {
         return prefsFactory().getString("REFRESH_TOKEN", null);
     }
 
+    public static String debugSettingsStorage() {
+        StringBuilder s = new StringBuilder("Toot settings storage contents: ");
+        s.append("\n\tLogged in: " + hasLoggedIn().toString());
+        s.append("\n\tUsername: " + getUsername());
+        s.append("\n\tInstance URL: " + getInstanceURL());
+        s.append("\n\tClient ID: " + getClientID());
+        s.append("\n\tClient secret: " + getClientSecret());
+        s.append("\n\tAccess token:" + getOAuthAccessToken());
+        s.append("\n\tRefresh token: " + getOAuthRefreshToken());
+
+        return s.toString();
+    }
+
     public void onCreate() {
         super.onCreate();
         Toot.context = getApplicationContext();
     }
+
 }
