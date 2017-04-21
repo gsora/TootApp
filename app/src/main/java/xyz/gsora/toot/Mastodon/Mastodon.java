@@ -108,12 +108,23 @@ public class Mastodon {
         );
     }
 
+    /**
+     * Returns the first page of the user's home
+     *
+     * @return an array of Status containing the user's home first page
+     */
     public Observable<Response<Status[]>> getHomeTimeline() {
         return buildRxRetrofit().create(API.class).getHomeTimeline(
                 Toot.buildBearer()
         );
     }
 
+    /**
+     * Returns the page of the user's home located by the URL
+     *
+     * @param url page to retrieve
+     * @return an array of Status containing the user's home at the given URL
+     */
     public Observable<Response<Status[]>> getHomeTimeline(String url) {
         return buildRxRetrofit().create(API.class).getHomeTimeline(
                 Toot.buildBearer(),
