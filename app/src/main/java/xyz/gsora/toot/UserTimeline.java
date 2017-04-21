@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +51,10 @@ public class UserTimeline extends AppCompatActivity {
                 Intent i = new Intent(UserTimeline.this, SendToot.class);
                 startActivity(i);
         });
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, Toot.debugSettingsStorage());
+        }
     }
 
     // add the settings button
