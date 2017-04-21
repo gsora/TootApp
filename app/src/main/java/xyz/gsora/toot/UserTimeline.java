@@ -36,11 +36,11 @@ public class UserTimeline extends AppCompatActivity {
     FloatingActionButton newTootFAB;
     @BindView(R.id.userTimelineRefresh)
     SwipeRefreshLayout refresh;
-    MenuItem toot_settings_button;
-    Realm realm;
-    Mastodon m;
-    StatusesListAdapter adapter;
-    private String nextPage;
+    private MenuItem toot_settings_button;
+    private Realm realm;
+    private Mastodon m;
+    private StatusesListAdapter adapter;
+    private String prevPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class UserTimeline extends AppCompatActivity {
         ButterKnife.bind(this);
         realm = Realm.getDefaultInstance();
         m = Mastodon.getInstance();
-        nextPage = null;
+        prevPage = null;
         systemLocale = Locale.getDefault().getLanguage();
         setUpRecyclerView(systemLocale);
 
@@ -100,17 +100,17 @@ public class UserTimeline extends AppCompatActivity {
 
     private void setupRefreshListener() {
         refresh.setOnRefreshListener(() -> {
-            refresh.setRefreshing(true);
             pullData(false);
         });
     }
 
     private void pullData(Boolean isPage) {
+        refresh.setRefreshing(true);
         Observable<Response<Status[]>> home;
         if (!isPage) {
             home = m.getHomeTimeline();
         } else {
-            home = m.getHomeTimeline(nextPage);
+            home = m.getHomeTimeline(prevPage);
         }
         home
                 .observeOn(AndroidSchedulers.mainThread())
