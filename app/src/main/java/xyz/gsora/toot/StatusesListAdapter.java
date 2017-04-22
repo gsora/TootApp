@@ -1,9 +1,9 @@
 package xyz.gsora.toot;
 
+import MastodonTypes.Boost;
 import MastodonTypes.Status;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,7 +52,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Status s = getItem(position);
-        Status sb = s.getReblog();
+        Boost sb = s.getReblog();
 
         if (sb != null) { // this is a boost
             setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder);
@@ -62,10 +62,10 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
     }
 
     private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, StatusesListAdapter.ViewHolder holder) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            holder.statusAuthor.setText(CoolHtml.html(author, Html.FROM_HTML_MODE_COMPACT));
-            holder.status.setText(CoolHtml.html(content, Html.FROM_HTML_MODE_COMPACT));
-        }
+
+        holder.statusAuthor.setText(CoolHtml.html(author));
+        holder.status.setText(CoolHtml.html(content));
+
 
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
 
