@@ -12,7 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
-public class Status extends RealmObject implements Serializable {
+public class Boost extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = 4983372382391510544L;
     @PrimaryKey
@@ -83,10 +83,6 @@ public class Status extends RealmObject implements Serializable {
     @SerializedName("favourites_count")
     @Expose
     private Integer favouritesCount;
-
-    @SerializedName("reblog")
-    @Expose
-    private Boost reblog;
 
     @SerializedName("favourited")
     @Expose
@@ -232,14 +228,6 @@ public class Status extends RealmObject implements Serializable {
         this.favouritesCount = favouritesCount;
     }
 
-    public Boost getReblog() {
-        return reblog;
-    }
-
-    public void setReblog(Boost reblog) {
-        this.reblog = reblog;
-    }
-
     public Boolean getFavourited() {
         return favourited;
     }
@@ -263,7 +251,7 @@ public class Status extends RealmObject implements Serializable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(createdAt).append(inReplyToId).append(inReplyToAccountId).append(sensitive).append(spoilerText).append(visibility).append(application).append(account).append(mediaAttachments).append(mentions).append(tags).append(uri).append(content).append(url).append(reblogsCount).append(favouritesCount).append(reblog).append(favourited).append(reblogged).toHashCode();
+        return new HashCodeBuilder().append(id).append(createdAt).append(inReplyToId).append(inReplyToAccountId).append(sensitive).append(spoilerText).append(visibility).append(application).append(account).append(mediaAttachments).append(mentions).append(tags).append(uri).append(content).append(url).append(reblogsCount).append(favouritesCount).append(favourited).append(reblogged).toHashCode();
     }
 
     @Override
@@ -271,11 +259,11 @@ public class Status extends RealmObject implements Serializable {
         if (other == this) {
             return true;
         }
-        if (!(other instanceof Status)) {
+        if (!(other instanceof Boost)) {
             return false;
         }
-        Status rhs = ((Status) other);
-        return new EqualsBuilder().append(id, rhs.id).append(createdAt, rhs.createdAt).append(inReplyToId, rhs.inReplyToId).append(inReplyToAccountId, rhs.inReplyToAccountId).append(sensitive, rhs.sensitive).append(spoilerText, rhs.spoilerText).append(visibility, rhs.visibility).append(application, rhs.application).append(account, rhs.account).append(mediaAttachments, rhs.mediaAttachments).append(mentions, rhs.mentions).append(tags, rhs.tags).append(uri, rhs.uri).append(content, rhs.content).append(url, rhs.url).append(reblogsCount, rhs.reblogsCount).append(favouritesCount, rhs.favouritesCount).append(reblog, rhs.reblog).append(favourited, rhs.favourited).append(reblogged, rhs.reblogged).isEquals();
+        Boost rhs = ((Boost) other);
+        return new EqualsBuilder().append(id, rhs.id).append(createdAt, rhs.createdAt).append(inReplyToId, rhs.inReplyToId).append(inReplyToAccountId, rhs.inReplyToAccountId).append(sensitive, rhs.sensitive).append(spoilerText, rhs.spoilerText).append(visibility, rhs.visibility).append(application, rhs.application).append(account, rhs.account).append(mediaAttachments, rhs.mediaAttachments).append(mentions, rhs.mentions).append(tags, rhs.tags).append(uri, rhs.uri).append(content, rhs.content).append(url, rhs.url).append(reblogsCount, rhs.reblogsCount).append(favouritesCount, rhs.favouritesCount).append(favourited, rhs.favourited).append(reblogged, rhs.reblogged).isEquals();
     }
 
 }
