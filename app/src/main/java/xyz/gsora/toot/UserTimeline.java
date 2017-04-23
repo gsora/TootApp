@@ -39,8 +39,8 @@ public class UserTimeline extends AppCompatActivity {
     FloatingActionButton newTootFAB;
     @BindView(R.id.userTimelineRefresh)
     SwipeRefreshLayout refresh;
-    int pastVisiblesItems, visibleItemCount, totalItemCount;
-    int calls = 0;
+    private int pastVisiblesItems, visibleItemCount, totalItemCount;
+    private int calls = 0;
     private LinearLayoutManager llm;
     private MenuItem toot_settings_button;
     private Realm realm;
@@ -54,13 +54,15 @@ public class UserTimeline extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_timeline);
         ButterKnife.bind(this);
-        realm = Realm.getDefaultInstance();
+        realm = Toot.getRealm();
         m = Mastodon.getInstance();
         nextPage = null;
         systemLocale = Locale.getDefault().getLanguage();
         setUpRecyclerView(systemLocale);
 
-        emptyRealm();
+        if (BuildConfig.DEBUG) {
+            emptyRealm();
+        }
 
         // setup the refresh listener
         setupRefreshListener();
@@ -90,12 +92,12 @@ public class UserTimeline extends AppCompatActivity {
     }
 
     private void setUpRecyclerView(String locale) {
-        RealmResults<Status> statuses = realm.where(Status.class).findAllSortedAsync("id", Sort.DESCENDING);
-        adapter = new StatusesListAdapter(statuses, locale, getApplicationContext());
+        RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
+        adapter = new StatusesListAdapter(statuses, locale, getApplication());
         llm = new LinearLayoutManager(this);
         statusList.setLayoutManager(llm);
         statusList.setAdapter(adapter);
-        statusList.setHasFixedSize(true);
+        statusList.setHasFixedSize(false);
 
         statusList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -110,7 +112,6 @@ public class UserTimeline extends AppCompatActivity {
                     if (loading) {
                         if ((visibleItemCount + pastVisiblesItems) >= totalItemCount) {
                             loading = false;
-                            Log.d(TAG, "end of the list!");
                             pullData(true);
                         }
                     }
@@ -120,9 +121,9 @@ public class UserTimeline extends AppCompatActivity {
     }
 
     private void setupRefreshListener() {
-        refresh.setOnRefreshListener(() -> {
-            pullData(false);
-        });
+        refresh.setOnRefreshListener(() ->
+                pullData(false)
+        );
     }
 
     private void pullData(Boolean page) {
@@ -148,20 +149,27 @@ public class UserTimeline extends AppCompatActivity {
                 );
     }
 
-    public void updateDataError(Throwable error) {
+    private void updateDataError(Throwable error) {
         Log.d(TAG, error.toString());
         refresh.setRefreshing(false);
-        Toasty.error(getApplicationContext(), "Something went wrong :(", Toast.LENGTH_SHORT, true).show();
-
+        Toasty.error(getApplicationContext(), "Something went wrong :(\n" + error.toString(), Toast.LENGTH_SHORT, true).show();
     }
 
-    public void updateData(Response<Status[]> statuses) {
+    private void updateData(Response<Status[]> statuses) {
         debugCallNums();
         realm.executeTransaction((Realm r) -> {
             for (Status s : statuses.body()) {
-                r.insertOrUpdate(s);
+                if (s.getReblog() == null) {
+                    s.setThisIsABoost(false);
+                } else {
+                    s.setThisIsABoost(true);
+                }
+                if (realm.where(Status.class).equalTo("id", s.getId()).count() <= 0) {
+                    r.insertOrUpdate(s);
+                }
             }
         });
+
         refresh.setRefreshing(false);
 
         String links = statuses.headers().get("Link");
@@ -171,9 +179,7 @@ public class UserTimeline extends AppCompatActivity {
     }
 
     private void emptyRealm() {
-        realm.beginTransaction();
-        realm.deleteAll();
-        realm.commitTransaction();
+        realm.executeTransaction((Realm r) -> r.deleteAll());
     }
 
     private void debugCallNums() {
