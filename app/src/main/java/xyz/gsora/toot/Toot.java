@@ -96,6 +96,8 @@ public class Toot extends Application {
         return prefsFactory().getString("REFRESH_TOKEN", null);
     }
 
+<<<<<<<<< Temporary merge branch 1
+=========
     public static String debugSettingsStorage() {
         StringBuilder s = new StringBuilder("Toot settings storage contents: ");
         s.append("\n\tLogged in: " + hasLoggedIn().toString());
@@ -134,5 +136,8 @@ public class Toot extends Application {
                             .build());
         }
     }
+<<<<<<<<< Temporary merge branch 1
+=========
 
+>>>>>>>>> Temporary merge branch 2
 }
