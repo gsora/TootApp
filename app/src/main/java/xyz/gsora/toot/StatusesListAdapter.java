@@ -22,7 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by gsora on 4/9/17.
@@ -72,7 +72,15 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
 
         // format the timestamp according to the device's setting
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.forLanguageTag(systemLocale));
+        SimpleDateFormat fmt;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Toot.getAppContext().getResources().getConfiguration().getLocales().get(0));
+        } else {
+            fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Toot.getAppContext().getResources().getConfiguration().locale);
+        }
+
+        fmt.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         Date d = null;
         try {
             d = fmt.parse(timestamp);
