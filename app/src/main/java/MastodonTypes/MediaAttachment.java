@@ -3,13 +3,14 @@ package MastodonTypes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import io.realm.RealmObject;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
-public class MediaAttachment implements Serializable {
+public class MediaAttachment extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = 8349948183094094758L;
     @SerializedName("id")

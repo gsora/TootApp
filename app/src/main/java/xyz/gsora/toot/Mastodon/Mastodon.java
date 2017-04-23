@@ -2,10 +2,15 @@ package xyz.gsora.toot.Mastodon;
 
 import MastodonTypes.AppCreationResponse;
 import MastodonTypes.OAuthResponse;
+import MastodonTypes.Status;
 import io.reactivex.Observable;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import xyz.gsora.toot.BuildConfig;
 import xyz.gsora.toot.Toot;
 
 /**
@@ -39,6 +44,18 @@ public class Mastodon {
         return ourInstance;
     }
 
+    public OkHttpClient logger() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder client = new OkHttpClient.Builder();
+
+        if (BuildConfig.DEBUG) {
+            return client.addInterceptor(interceptor).build();
+        } else {
+            return client.build();
+        }
+    }
+
     /**
      * Build a Retrofit instance with JSON converter and a RxJava call adapter.
      *
@@ -47,6 +64,7 @@ public class Mastodon {
     private Retrofit buildRxRetrofit() {
         return new Retrofit.Builder()
                 .baseUrl(Toot.getInstanceURL())
+                .client(logger())
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
@@ -87,6 +105,30 @@ public class Mastodon {
                 REDIRECT_URI,
                 "authorization_code",
                 code
+        );
+    }
+
+    /**
+     * Returns the first page of the user's home
+     *
+     * @return an array of Status containing the user's home first page
+     */
+    public Observable<Response<Status[]>> getHomeTimeline() {
+        return buildRxRetrofit().create(API.class).getHomeTimeline(
+                Toot.buildBearer()
+        );
+    }
+
+    /**
+     * Returns the page of the user's home located by the URL
+     *
+     * @param url page to retrieve
+     * @return an array of Status containing the user's home at the given URL
+     */
+    public Observable<Response<Status[]>> getHomeTimeline(String url) {
+        return buildRxRetrofit().create(API.class).getHomeTimeline(
+                Toot.buildBearer(),
+                url
         );
     }
 }

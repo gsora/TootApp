@@ -3,13 +3,14 @@ package MastodonTypes;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import io.realm.RealmObject;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
-public class Application implements Serializable {
+public class Application extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = -6057618037440799795L;
     @SerializedName("name")
@@ -17,7 +18,7 @@ public class Application implements Serializable {
     private String name;
     @SerializedName("website")
     @Expose
-    private Object website;
+    private String website;
 
     public String getName() {
         return name;
@@ -27,11 +28,11 @@ public class Application implements Serializable {
         this.name = name;
     }
 
-    public Object getWebsite() {
+    public String getWebsite() {
         return website;
     }
 
-    public void setWebsite(Object website) {
+    public void setWebsite(String website) {
         this.website = website;
     }
 
