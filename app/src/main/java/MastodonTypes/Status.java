@@ -96,6 +96,16 @@ public class Status extends RealmObject implements Serializable {
     @Expose
     private Boolean reblogged;
 
+    private boolean thisIsABoost;
+
+    public Boolean getThisIsABoost() {
+        return thisIsABoost;
+    }
+
+    public void setThisIsABoost(Boolean thisIsABoost) {
+        this.thisIsABoost = thisIsABoost;
+    }
+
     public long getId() {
         return id;
     }
