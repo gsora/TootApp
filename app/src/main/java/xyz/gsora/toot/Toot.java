@@ -3,7 +3,10 @@ package xyz.gsora.toot;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.facebook.stetho.Stetho;
+import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 /**
  * Created by gsora on 4/20/17.
@@ -110,10 +113,26 @@ public class Toot extends Application {
         return "Bearer " + getOAuthAccessToken();
     }
 
+    public static Realm getRealm() {
+        return Realm.getInstance(
+                new RealmConfiguration.Builder()
+                        .deleteRealmIfMigrationNeeded()
+                        .build());
+    }
+
     public void onCreate() {
         super.onCreate();
         Toot.context = getApplicationContext();
+
         Realm.init(context);
+
+        if (BuildConfig.DEBUG) {
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(RealmInspectorModulesProvider.builder(this).build())
+                            .build());
+        }
     }
 
 }
