@@ -13,8 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -54,10 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         // parse intent data if any (aka if the browser redirected here)
         Intent intent = getIntent();
         Uri uri = intent.getData();
-        if (uri == null || !uri.toString().startsWith(Mastodon.REDIRECT_URI) || Toot.hasLoggedIn()) {
-            // TODO: actually handle the case where no data comes from OAuth
-            handleApplicationCreationError(new Exception("!!! ERROR !!! --> OAuth code data was null!"));
-        } else {
+        if (!(uri == null || !uri.toString().startsWith(Mastodon.REDIRECT_URI) || Toot.hasLoggedIn())) {
             userAtInstance.setEnabled(false);
             login.setEnabled(false);
             progress.setVisibility(View.VISIBLE);
@@ -144,6 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                 .appendQueryParameter("client_id", acr.getClientId())
                 .appendQueryParameter("response_type", "code")
                 .appendQueryParameter("redirect_uri", Mastodon.REDIRECT_URI)
+                .appendQueryParameter("scope", Mastodon.SCOPES)
                 .build();
 
         Intent browser = new Intent(Intent.ACTION_VIEW, destination);
@@ -159,8 +159,11 @@ public class LoginActivity extends AppCompatActivity {
         // TODO: fix my dumbness
         Log.d(TAG, "application creation error: " + error.toString());
 
+        Toasty.error(getApplicationContext(), "Something went wrong :(\n" + error.toString(), Toast.LENGTH_SHORT, true).show();
+
         userAtInstance.setEnabled(true);
         login.setEnabled(true);
+        progress.setVisibility(View.INVISIBLE);
     }
 
 
@@ -216,6 +219,8 @@ public class LoginActivity extends AppCompatActivity {
     private void handleUnsuccessfulOAuthReply(Throwable error) {
         // TODO: fix my dumbness
         Log.d(TAG, "OAuth error: " + error.toString());
+
+        Toasty.error(getApplicationContext(), "Something went wrong :(\n" + error.toString(), Toast.LENGTH_SHORT, true).show();
 
         userAtInstance.setEnabled(true);
         login.setEnabled(true);
