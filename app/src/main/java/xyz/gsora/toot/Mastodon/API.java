@@ -7,6 +7,8 @@ import io.reactivex.Observable;
 import retrofit2.Response;
 import retrofit2.http.*;
 
+import java.util.Map;
+
 /**
  * Created by gsora on 4/20/17.
  * <p>
@@ -29,7 +31,8 @@ public interface API {
             @Field("client_secret") String clientSecret,
             @Field("redirect_uri") String redirectUri,
             @Field("grant_type") String grantType,
-            @Field("code") String code
+            @Field("code") String code,
+            @Field("scope") String scope
     );
 
     @GET("api/v1/timelines/home")
@@ -41,5 +44,12 @@ public interface API {
     Observable<Response<Status[]>> getHomeTimeline(
             @Header("Authorization") String authBearer,
             @Url String url
+    );
+
+    @FormUrlEncoded
+    @POST("api/v1/statuses")
+    Observable<Response<Status>> postStatus(
+            @Header("Authorization") String authBearer,
+            @FieldMap(encoded = true) Map<String, Object> fields
     );
 }
