@@ -8,6 +8,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -56,18 +57,31 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         Status s = holder.data;
         Boost sb = s.getReblog();
 
+
         if (s.getThisIsABoost()) { // this is a boost
-            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder);
+            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText());
         } else {
-            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder);
+            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder, s.getSpoilerText());
         }
 
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, StatusesListAdapter.ViewHolder holder) {
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, StatusesListAdapter.ViewHolder holder, String spoilerText) {
 
         holder.statusAuthor.setText(CoolHtml.html(author));
         holder.status.setText(CoolHtml.html(content));
+        if (spoilerText.length() > 0) {
+            holder.status.setTextSize(0.0f);
+            holder.showContentWarning.setVisibility(View.VISIBLE);
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
+            p.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            p.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+
+            holder.contentWarningText.setTextSize(16.0f);
+            holder.contentWarningText.setVisibility(View.VISIBLE);
+            holder.contentWarningText.setText(spoilerText);
+            holder.toggleStatusMargins();
+        }
 
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
 
@@ -143,12 +157,46 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         TextView boostAuthor;
         @BindView(R.id.timestamp)
         TextView timestamp;
+        @BindView(R.id.contentWarningText)
+        TextView contentWarningText;
+        @BindView(R.id.showContentWarning)
+        Button showContentWarning;
+
+        private Integer bottomStatus;
+        private Integer topStatus;
+        private Integer leftStatus;
+        private Integer rightStatus;
 
         public ViewHolder(View v) {
             super(v);
             data = null;
             ButterKnife.bind(this, v);
             status.setMovementMethod(LinkMovementMethod.getInstance());
+
+            showContentWarning.setOnClickListener((View button) -> {
+                toggleStatusMargins();
+                if (status.getTextSize() <= 0.0f) {
+                    status.setTextSize(16.0f);
+                } else {
+                    status.setTextSize(0.0f);
+                }
+            });
+        }
+
+        public void toggleStatusMargins() {
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) status.getLayoutParams();
+
+            if (p.topMargin != 0) {
+                topStatus = p.topMargin;
+                bottomStatus = p.bottomMargin;
+                leftStatus = p.leftMargin;
+                rightStatus = p.rightMargin;
+                p.setMargins(0, 0, 0, 16);
+            } else {
+                p.setMargins(leftStatus, topStatus, rightStatus, bottomStatus);
+            }
+
+            status.setLayoutParams(p);
         }
 
     }
