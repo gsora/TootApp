@@ -1,6 +1,7 @@
 package xyz.gsora.toot;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -53,6 +54,14 @@ public class SendToot extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.send_toot_menu, menu);
         send_toot_menu = menu.findItem(R.id.send_toot_button);
+
+        send_toot_menu.setOnMenuItemClickListener((MenuItem m) -> {
+            Intent sendStatus = new Intent(getApplicationContext(), PostStatus.class);
+            sendStatus.putExtra(PostStatus.STATUS, toot_content.getText().toString());
+            getApplicationContext().startService(sendStatus);
+            finish();
+            return true;
+        });
 
         return super.onCreateOptionsMenu(menu);
     }
