@@ -110,7 +110,7 @@
                         android:layout_marginLeft="16dp"
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="4dp"
-                        android:text="TextView"
+                        android:text=""
                         android:textSize="16sp"/>
 
                     <TextView
