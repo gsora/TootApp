@@ -76,11 +76,21 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
             LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
             p.height = LinearLayout.LayoutParams.WRAP_CONTENT;
             p.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-
+            // ugly hack
+            p.bottomMargin = -16;
+            holder.showContentWarning.setLayoutParams(p);
             holder.contentWarningText.setTextSize(16.0f);
             holder.contentWarningText.setVisibility(View.VISIBLE);
             holder.contentWarningText.setText(spoilerText);
-            holder.toggleStatusMargins();
+        } else {
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
+            p.height = 0;
+            p.width = 0;
+            p.bottomMargin = 0;
+            holder.showContentWarning.setLayoutParams(p);
+            holder.status.setTextSize(16.0f);
+            holder.contentWarningText.setTextSize(0.0f);
+            holder.contentWarningText.setText("");
         }
 
         Picasso.with(parentCtx).load(avatar).into(holder.avatar);
@@ -131,7 +141,12 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
             holder.boostAuthor.setText("Boosted by " + booster);
             holder.boostAuthor.setTextSize(12.0f);
         } else {
+            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
+            p.setMargins(0, 0, 0, 0);
+            holder.boostAuthor.setLayoutParams(p);
+            holder.boostAuthor.setVisibility(View.INVISIBLE);
             holder.boostAuthor.setText("");
+            holder.boostAuthor.setTextSize(0);
         }
     }
 
@@ -174,31 +189,14 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
             status.setMovementMethod(LinkMovementMethod.getInstance());
 
             showContentWarning.setOnClickListener((View button) -> {
-                toggleStatusMargins();
                 if (status.getTextSize() <= 0.0f) {
                     status.setTextSize(16.0f);
                 } else {
                     status.setTextSize(0.0f);
                 }
             });
+
         }
-
-        public void toggleStatusMargins() {
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) status.getLayoutParams();
-
-            if (p.topMargin != 0) {
-                topStatus = p.topMargin;
-                bottomStatus = p.bottomMargin;
-                leftStatus = p.leftMargin;
-                rightStatus = p.rightMargin;
-                p.setMargins(0, 0, 0, 16);
-            } else {
-                p.setMargins(leftStatus, topStatus, rightStatus, bottomStatus);
-            }
-
-            status.setLayoutParams(p);
-        }
-
     }
 
 }
