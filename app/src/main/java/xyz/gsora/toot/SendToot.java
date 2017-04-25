@@ -26,25 +26,35 @@ import es.dmoral.toasty.Toasty;
 
 public class SendToot extends AppCompatActivity {
 
+    public static final String REPLY_ACTION = "xyz.gsora.toot.ReplyToStatus";
+    public static final String REPLY_TO = "xyz.gsora.toot.ReplyTo";
+    public static final String REPLY_TO_ID = "xyz.gsora.toot.ReplyToId";
     private static final String TAG = SendToot.class.getSimpleName();
-
     @BindView(R.id.toot_content)
     EditText toot_content;
     @BindView(R.id.characters_remaining)
     TextView characters_remaining;
     ColorStateList oldColors;
     private MenuItem send_toot_menu;
+    private String replyToId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_toot);
         setTitle("Send toot");
+        replyToId = null;
 
         ButterKnife.bind(this);
         SetupCharacterCounter();
 
         oldColors = characters_remaining.getTextColors();
+
+        Intent reply = getIntent();
+        if (reply.getAction() == REPLY_ACTION) {
+            replyToId = reply.getStringExtra(REPLY_TO_ID);
+            toot_content.append("@" + reply.getStringExtra(REPLY_TO) + " ");
+        }
     }
 
     /*
@@ -58,6 +68,7 @@ public class SendToot extends AppCompatActivity {
         send_toot_menu.setOnMenuItemClickListener((MenuItem m) -> {
             Intent sendStatus = new Intent(getApplicationContext(), PostStatus.class);
             sendStatus.putExtra(PostStatus.STATUS, toot_content.getText().toString());
+            sendStatus.putExtra(PostStatus.REPLYID, replyToId);
             getApplicationContext().startService(sendStatus);
             finish();
             return true;

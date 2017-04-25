@@ -3,12 +3,14 @@ package xyz.gsora.toot;
 import MastodonTypes.Boost;
 import MastodonTypes.Status;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -176,6 +178,8 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         TextView contentWarningText;
         @BindView(R.id.showContentWarning)
         Button showContentWarning;
+        @BindView(R.id.reply)
+        ImageButton replyButton;
 
         private Integer bottomStatus;
         private Integer topStatus;
@@ -194,6 +198,14 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
                 } else {
                     status.setTextSize(0.0f);
                 }
+            });
+
+            replyButton.setOnClickListener((View button) -> {
+                Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
+                reply.setAction(SendToot.REPLY_ACTION);
+                reply.putExtra(SendToot.REPLY_TO, data.getAccount().getAcct());
+                reply.putExtra(SendToot.REPLY_TO_ID, data.getId());
+                Toot.getAppContext().startActivity(reply);
             });
 
         }
