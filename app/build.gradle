@@ -18,6 +18,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            applicationVariants.all { variant ->
+                renameAPK(variant, defaultConfig, 'R')
+            }
+        }
+
+        debug {
+            applicationVariants.all { variant ->
+                renameAPK(variant, defaultConfig, 'D')
+            }
         }
     }
 
@@ -28,6 +38,16 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+def renameAPK(variant, defaultConfig, buildType) {
+    variant.outputs.each { output ->
+        def formattedDate = new Date().format('yyMMdd-hhmm')
+
+        def file = output.packageApplication.outputFile
+        def fileName = applicationName + "_v" + defaultConfig.versionName + "_" + formattedDate + "_" + buildType + ".apk"
+        output.packageApplication.outputFile = new File(file.parent, fileName)
     }
 }
 
