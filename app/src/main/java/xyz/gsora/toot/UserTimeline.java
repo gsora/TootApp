@@ -153,6 +153,7 @@ public class UserTimeline extends AppCompatActivity {
         Log.d(TAG, error.toString());
         refresh.setRefreshing(false);
         Toasty.error(getApplicationContext(), "Something went wrong :(\n" + error.toString(), Toast.LENGTH_SHORT, true).show();
+        loading = true;
     }
 
     private void updateData(Response<Status[]> statuses) {

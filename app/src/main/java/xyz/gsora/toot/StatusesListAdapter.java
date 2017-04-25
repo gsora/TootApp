@@ -1,6 +1,7 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Boost;
+import MastodonTypes.Mention;
 import MastodonTypes.Status;
 import android.content.Context;
 import android.content.Intent;
@@ -23,6 +24,7 @@ import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -202,12 +204,24 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
 
             replyButton.setOnClickListener((View button) -> {
                 Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
+                ArrayList<String> handles = new ArrayList<>();
+
+                handles.add(data.getAccount().getAcct());
+                if (!(data.getMentions().size() <= 0)) {
+                    for (Mention mention : data.getMentions()) {
+                        String acct = mention.getAcct();
+                        if (!acct.contains(Toot.getUsername())) {
+                            handles.add(mention.getAcct());
+                        }
+                    }
+                }
+
                 reply.setAction(SendToot.REPLY_ACTION);
-                reply.putExtra(SendToot.REPLY_TO, data.getAccount().getAcct());
-                reply.putExtra(SendToot.REPLY_TO_ID, data.getId());
+                reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
+                reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
+
                 Toot.getAppContext().startActivity(reply);
             });
-
         }
     }
 
