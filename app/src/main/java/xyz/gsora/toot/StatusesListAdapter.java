@@ -1,14 +1,17 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Boost;
+import MastodonTypes.Mention;
 import MastodonTypes.Status;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
@@ -21,6 +24,7 @@ import io.realm.RealmResults;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -176,6 +180,8 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         TextView contentWarningText;
         @BindView(R.id.showContentWarning)
         Button showContentWarning;
+        @BindView(R.id.reply)
+        ImageButton replyButton;
 
         private Integer bottomStatus;
         private Integer topStatus;
@@ -196,6 +202,26 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
                 }
             });
 
+            replyButton.setOnClickListener((View button) -> {
+                Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
+                ArrayList<String> handles = new ArrayList<>();
+
+                handles.add(data.getAccount().getAcct());
+                if (!(data.getMentions().size() <= 0)) {
+                    for (Mention mention : data.getMentions()) {
+                        String acct = mention.getAcct();
+                        if (!acct.contains(Toot.getUsername())) {
+                            handles.add(mention.getAcct());
+                        }
+                    }
+                }
+
+                reply.setAction(SendToot.REPLY_ACTION);
+                reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
+                reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
+
+                Toot.getAppContext().startActivity(reply);
+            });
         }
     }
 

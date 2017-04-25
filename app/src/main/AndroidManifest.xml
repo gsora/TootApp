@@ -42,6 +42,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".PostStatus"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

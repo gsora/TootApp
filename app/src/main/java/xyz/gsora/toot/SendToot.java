@@ -1,6 +1,7 @@
 package xyz.gsora.toot;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -23,7 +24,13 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 
+import java.util.ArrayList;
+
 public class SendToot extends AppCompatActivity {
+
+    public static final String REPLY_ACTION = "xyz.gsora.toot.ReplyToStatus";
+    public static final String REPLY_TO = "xyz.gsora.toot.ReplyTo";
+    public static final String REPLY_TO_ID = "xyz.gsora.toot.ReplyToId";
 
     private static final String TAG = SendToot.class.getSimpleName();
 
@@ -31,19 +38,34 @@ public class SendToot extends AppCompatActivity {
     EditText toot_content;
     @BindView(R.id.characters_remaining)
     TextView characters_remaining;
-    ColorStateList oldColors;
+    private ColorStateList oldColors;
     private MenuItem send_toot_menu;
+    private String replyToId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_toot);
         setTitle("Send toot");
+        replyToId = null;
 
         ButterKnife.bind(this);
         SetupCharacterCounter();
 
         oldColors = characters_remaining.getTextColors();
+
+        Intent reply = getIntent();
+        if (reply.getAction() == REPLY_ACTION) {
+            replyToId = reply.getStringExtra(REPLY_TO_ID);
+            StringBuilder handlesString = new StringBuilder();
+            ArrayList<String> handles = reply.getStringArrayListExtra(REPLY_TO);
+            for (String s :
+                    handles) {
+                handlesString.append("@" + s + " ");
+
+            }
+            toot_content.append(handlesString.toString());
+        }
     }
 
     /*
@@ -53,6 +75,15 @@ public class SendToot extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.send_toot_menu, menu);
         send_toot_menu = menu.findItem(R.id.send_toot_button);
+
+        send_toot_menu.setOnMenuItemClickListener((MenuItem m) -> {
+            Intent sendStatus = new Intent(getApplicationContext(), PostStatus.class);
+            sendStatus.putExtra(PostStatus.STATUS, toot_content.getText().toString());
+            sendStatus.putExtra(PostStatus.REPLYID, replyToId);
+            getApplicationContext().startService(sendStatus);
+            finish();
+            return true;
+        });
 
         return super.onCreateOptionsMenu(menu);
     }

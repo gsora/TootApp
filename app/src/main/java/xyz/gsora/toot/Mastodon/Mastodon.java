@@ -13,6 +13,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import xyz.gsora.toot.BuildConfig;
 import xyz.gsora.toot.Toot;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by gsora on 4/20/17.
  * <p>
@@ -29,7 +33,6 @@ public class Mastodon {
      * Standard scopes.
      */
     public static final String SCOPES = "read write follow";
-
     private static Mastodon ourInstance = new Mastodon();
 
     private Mastodon() {
@@ -104,7 +107,8 @@ public class Mastodon {
                 Toot.getClientSecret(),
                 REDIRECT_URI,
                 "authorization_code",
-                code
+                code,
+                SCOPES
         );
     }
 
@@ -130,5 +134,53 @@ public class Mastodon {
                 Toot.buildBearer(),
                 url
         );
+    }
+
+    public Observable<Response<Status>> postPublicStatus(String statusContent, String inReplyToId, List<String> mediaIds, Boolean sensitive, String spoilerText, StatusVisibility statusVisibility) {
+        Map<String, Object> fields = new HashMap<String, Object>();
+        fields.put("status", statusContent);
+
+        if (inReplyToId != null) {
+            fields.put("in_reply_to_id", inReplyToId);
+        }
+
+        if (mediaIds != null) {
+            fields.put("media_ids", mediaIds);
+        }
+
+        if (sensitive) {
+            fields.put("sensitive", sensitive);
+        }
+
+        if (spoilerText != null) {
+            fields.put("spoiler_text", spoilerText);
+        }
+
+        switch (statusVisibility) {
+            case PUBLIC:
+                fields.put("visibility", "public");
+                break;
+            case DIRECT:
+                fields.put("visibility", "direct");
+                break;
+            case PRIVATE:
+                fields.put("visibility", "private");
+                break;
+            case UNLISTED:
+                fields.put("visibility", "unlisted");
+                break;
+        }
+
+        return buildRxRetrofit().create(API.class).postStatus(
+                Toot.buildBearer(),
+                fields
+        );
+    }
+
+    public enum StatusVisibility {
+        PUBLIC,
+        DIRECT,
+        PRIVATE,
+        UNLISTED
     }
 }
