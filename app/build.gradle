@@ -42,12 +42,19 @@ android {
 }
 
 def renameAPK(variant, defaultConfig, buildType) {
-    variant.outputs.each { output ->
-        def formattedDate = new Date().format('yyMMdd-hhmm')
+    if (buildType == 'D') {
+        variant.outputs.each { output ->
+            def file = output.packageApplication.outputFile
+            output.packageApplication.outputFile = new File(file.parent, applicationName + "-debugRelease" + ".apk")
+        }
+    } else {
+        variant.outputs.each { output ->
+            def formattedDate = new Date().format('yyMMdd-hhmm')
 
-        def file = output.packageApplication.outputFile
-        def fileName = applicationName + "_v" + defaultConfig.versionName + "_" + formattedDate + "_" + buildType + ".apk"
-        output.packageApplication.outputFile = new File(file.parent, fileName)
+            def file = output.packageApplication.outputFile
+            def fileName = applicationName + "_v" + defaultConfig.versionName + "_" + formattedDate + "_" + buildType + ".apk"
+            output.packageApplication.outputFile = new File(file.parent, fileName)
+        }
     }
 }
 
