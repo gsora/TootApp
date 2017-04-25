@@ -63,6 +63,7 @@ public class PostStatus extends IntentService {
                     break;
             }
 
+
             Observable<Response<Status>> post = m.postPublicStatus(status, replyid, mediaids, sensitive, spoilertext, trueVisibility);
             post
                     .observeOn(AndroidSchedulers.mainThread())
@@ -71,6 +72,7 @@ public class PostStatus extends IntentService {
                             this::postSuccessful,
                             this::postError
                     );
+
         }
     }
 

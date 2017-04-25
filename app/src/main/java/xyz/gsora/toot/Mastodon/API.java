@@ -50,6 +50,6 @@ public interface API {
     @POST("api/v1/statuses")
     Observable<Response<Status>> postStatus(
             @Header("Authorization") String authBearer,
-            @FieldMap(encoded = true) Map<String, Object> fields
+            @FieldMap(encoded = false) Map<String, Object> fields
     );
 }
