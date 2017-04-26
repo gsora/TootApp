@@ -7,25 +7,19 @@
                                                  android:layout_height="match_parent"
                                                  tools:context="xyz.gsora.toot.UserTimeline">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/userTimelineRefresh"
+
+    <FrameLayout
+        android:id="@+id/frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/statuses_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fadeScrollbars="false"
-            android:scrollbars="vertical"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </FrameLayout>
 
     <com.roughike.bottombar.BottomBar
         android:id="@+id/BottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_gravity="bottom"
-        app:bb_behavior="shy"
+        app:bb_behavior="shy|iconsOnly"
         app:bb_showShadow="true"
         app:bb_tabXmlResource="@xml/bottom_bar"/>
 
