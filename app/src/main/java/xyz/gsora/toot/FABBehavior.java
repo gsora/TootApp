@@ -9,6 +9,8 @@ import com.roughike.bottombar.BottomBar;
 
 /**
  * Created by gsora on 4/26/17.
+ *
+ * FAB behavior that will stick it to any BottomBar
  */
 public class FABBehavior extends CoordinatorLayout.Behavior<FloatingActionButton> {
 
