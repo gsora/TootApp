@@ -20,7 +20,6 @@
             android:scrollbars="vertical"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-
     <com.roughike.bottombar.BottomBar
         android:id="@+id/BottomNavigation"
         android:layout_width="match_parent"
