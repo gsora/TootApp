@@ -61,7 +61,6 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         Status s = holder.data;
         Boost sb = s.getReblog();
 
-
         if (s.getThisIsABoost()) { // this is a boost
             setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText());
         } else {

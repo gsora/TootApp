@@ -12,7 +12,7 @@ public class DeciderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_decider);
 
         if (Toot.hasLoggedIn()) {
-            startActivity(new Intent(this, UserTimeline.class));
+            startActivity(new Intent(this, TimelineFragmentContainer.class));
         } else {
             startActivity(new Intent(this, LoginActivity.class));
         }

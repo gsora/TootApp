@@ -206,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
         Toot.saveOAuthRefreshToken(oAuthResponse.getRefreshToken());
 
         // send everyone to the main view!
-        Intent timeline = new Intent(this, UserTimeline.class);
+        Intent timeline = new Intent(this, TimelineFragmentContainer.class);
         startActivity(timeline);
         finish();
     }

@@ -32,14 +32,19 @@ import java.util.Locale;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainTimeline.OnFragmentInteractionListener} interface
+ * {@link Timeline.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainTimeline#newInstance} factory method to
+ * Use the {@link Timeline#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainTimeline extends Fragment {
+public class Timeline extends Fragment {
 
-    private static final String TAG = UserTimeline.class.getSimpleName();
+    private static final String TAG = TimelineFragmentContainer.class.getSimpleName();
+    private static final String TIMELINE_MAIN = "Timeline";
+    private static final String TIMELINE_LOCAL = "Local timeline";
+    private static final String TIMELINE_FEDERATED = "Federated timeline";
+    private static final String NOTIFICATIONS = "Notifications";
+    private static final String FAVORITES = "Favorites";
     private static String systemLocale;
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
@@ -54,21 +59,34 @@ public class MainTimeline extends Fragment {
     private StatusesListAdapter adapter;
     private String nextPage;
     private Boolean loading = true;
+    private String tabBarTitle;
+    private TimelineContent selectedTimeline;
 
-    public MainTimeline() {
+    public Timeline() {
+
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainTimeline.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MainTimeline newInstance() {
-        MainTimeline fragment = new MainTimeline();
+    public static Timeline newInstance(TimelineContent timelineContent) {
+        Timeline fragment = new Timeline();
+        switch (timelineContent) {
+            case TIMELINE_MAIN:
+                fragment.tabBarTitle = TIMELINE_MAIN;
+                break;
+            case TIMELINE_LOCAL:
+                fragment.tabBarTitle = TIMELINE_LOCAL;
+                break;
+            case TIMELINE_FEDERATED:
+                fragment.tabBarTitle = TIMELINE_FEDERATED;
+                break;
+            case FAVORITES:
+                fragment.tabBarTitle = FAVORITES;
+                break;
+            case NOTIFICATIONS:
+                fragment.tabBarTitle = NOTIFICATIONS;
+                break;
+        }
+
+        fragment.selectedTimeline = timelineContent;
         return fragment;
     }
 
@@ -81,7 +99,7 @@ public class MainTimeline extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_timeline, container, false);
         ButterKnife.bind(this, view);
-        getActivity().setTitle("Timeline");
+        getActivity().setTitle(tabBarTitle);
         return view;
     }
 
@@ -138,21 +156,71 @@ public class MainTimeline extends Fragment {
         });
     }
 
-    private void pullData(Boolean page) {
-        refresh.setRefreshing(true);
-        Observable<Response<Status[]>> home;
+    // TODO: remove me in favor of proper favorites and notifications
+    private Observable<Response<Status[]>> doodad(Boolean page) {
+        Observable<Response<Status[]>> statuses;
         if (nextPage == null || !page) {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "no previous page, loading the first one");
             }
-            home = m.getHomeTimeline();
+            statuses = m.getHomeTimeline();
         } else {
             if (BuildConfig.DEBUG) {
                 Log.d(TAG, "got previous page, loading it!");
             }
-            home = m.getHomeTimeline(nextPage);
+            statuses = m.getHomeTimeline(nextPage);
         }
-        home
+
+        return statuses;
+    }
+
+    private Observable<Response<Status[]>> gimmeStatusObservable(Boolean page) {
+        Observable<Response<Status[]>> statuses = null;
+        switch (selectedTimeline) {
+            case TIMELINE_MAIN:
+                statuses = doodad(page);
+                break;
+            case TIMELINE_LOCAL:
+                if (nextPage == null || !page) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "no previous page, loading the first one");
+                    }
+                    statuses = m.getLocalTimeline();
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "got previous page, loading it!");
+                    }
+                    statuses = m.getLocalTimeline(nextPage);
+                }
+                break;
+            case TIMELINE_FEDERATED:
+                if (nextPage == null || !page) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "no previous page, loading the first one");
+                    }
+                    statuses = m.getPublicTimeline();
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "got previous page, loading it!");
+                    }
+                    statuses = m.getPublicTimeline(nextPage);
+                }
+                break;
+            case FAVORITES:
+                statuses = doodad(page);
+                break;
+            case NOTIFICATIONS:
+                statuses = doodad(page);
+                break;
+        }
+
+        return statuses;
+    }
+
+    private void pullData(Boolean page) {
+        refresh.setRefreshing(true);
+        Observable<Response<Status[]>> statuses = gimmeStatusObservable(page);
+        statuses
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(
@@ -203,6 +271,14 @@ public class MainTimeline extends Fragment {
         refresh.setOnRefreshListener(() ->
                 pullData(false)
         );
+    }
+
+    public enum TimelineContent {
+        TIMELINE_MAIN,
+        TIMELINE_LOCAL,
+        TIMELINE_FEDERATED,
+        FAVORITES,
+        NOTIFICATIONS
     }
 
     /**
