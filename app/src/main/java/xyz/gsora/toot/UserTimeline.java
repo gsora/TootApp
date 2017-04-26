@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.roughike.bottombar.BottomBar;
 import es.dmoral.toasty.Toasty;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -39,6 +40,8 @@ public class UserTimeline extends AppCompatActivity {
     FloatingActionButton newTootFAB;
     @BindView(R.id.userTimelineRefresh)
     SwipeRefreshLayout refresh;
+    @BindView(R.id.BottomNavigation)
+    BottomBar bottomBar;
 
     private int pastVisiblesItems, visibleItemCount, totalItemCount;
     private int calls = 0;
@@ -69,6 +72,7 @@ public class UserTimeline extends AppCompatActivity {
         setupRefreshListener();
 
         // setup the bottom navigation bar
+        setupBottomBar();
 
         // get some data as soon as possible
         pullData(false);
@@ -187,6 +191,28 @@ public class UserTimeline extends AppCompatActivity {
 
     private void debugCallNums() {
         Log.d(TAG, "number of calls: " + ++calls);
+    }
+
+    private void setupBottomBar() {
+        bottomBar.setOnTabSelectListener((int tabId) -> {
+            switch (tabId) {
+                case R.id.timeline:
+                    Log.d(TAG, "setupBottomBar: pressed timeline");
+                    break;
+                case R.id.notifications:
+                    Log.d(TAG, "setupBottomBar: pressed notifications");
+                    break;
+                case R.id.local:
+                    Log.d(TAG, "setupBottomBar: pressed local");
+                    break;
+                case R.id.federated:
+                    Log.d(TAG, "setupBottomBar: pressed federated");
+                    break;
+                case R.id.favorites:
+                    Log.d(TAG, "setupBottomBar: pressed favorites");
+                    break;
+            }
+        });
     }
 
 }
