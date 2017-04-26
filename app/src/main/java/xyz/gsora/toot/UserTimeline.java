@@ -39,6 +39,7 @@ public class UserTimeline extends AppCompatActivity {
     FloatingActionButton newTootFAB;
     @BindView(R.id.userTimelineRefresh)
     SwipeRefreshLayout refresh;
+
     private int pastVisiblesItems, visibleItemCount, totalItemCount;
     private int calls = 0;
     private LinearLayoutManager llm;
@@ -67,9 +68,10 @@ public class UserTimeline extends AppCompatActivity {
         // setup the refresh listener
         setupRefreshListener();
 
+        // setup the bottom navigation bar
+
         // get some data as soon as possible
         pullData(false);
-
 
         // Setup FAB action
         newTootFAB.setOnClickListener((View v) -> {
@@ -186,4 +188,5 @@ public class UserTimeline extends AppCompatActivity {
     private void debugCallNums() {
         Log.d(TAG, "number of calls: " + ++calls);
     }
+
 }

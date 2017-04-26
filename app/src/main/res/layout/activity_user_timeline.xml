@@ -5,7 +5,6 @@
                                                  android:id="@+id/activity_user_timeline"
                                                  android:layout_width="match_parent"
                                                  android:layout_height="match_parent"
-
                                                  tools:context="xyz.gsora.toot.UserTimeline">
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -21,15 +20,15 @@
             android:scrollbars="vertical"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <it.sephiroth.android.library.bottomnavigation.BottomNavigation
+
+    <com.roughike.bottombar.BottomBar
         android:id="@+id/BottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_gravity="bottom"
-        app:bbn_badgeProvider="@string/bbn_badgeProvider"
-        app:bbn_entries="@menu/timeline_bottom_bar"
-        app:bbn_scrollEnabled="true"
-        app:layout_behavior="@string/bbn_phone_view_behavior"/>
+        app:bb_behavior="shy"
+        app:bb_showShadow="true"
+        app:bb_tabXmlResource="@xml/bottom_bar"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/newToot"
@@ -39,8 +38,7 @@
         android:layout_margin="16dp"
         android:clickable="true"
         app:fabSize="normal"
-        app:layout_anchorGravity="bottom|right|end"
-        app:layout_behavior="it.sephiroth.android.library.bottomnavigation.FloatingActionButtonBehavior"
+        app:layout_behavior="xyz.gsora.toot.FABBehavior"
         app:srcCompat="@drawable/ic_send_white_24dp"/>
 
 </android.support.design.widget.CoordinatorLayout>
