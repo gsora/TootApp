@@ -93,7 +93,7 @@ public class UserTimeline extends AppCompatActivity {
 
     private void setUpRecyclerView(String locale) {
         RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
-        adapter = new StatusesListAdapter(statuses, locale, getApplication());
+        adapter = new StatusesListAdapter(statuses, locale, this);
         llm = new LinearLayoutManager(this);
         statusList.setLayoutManager(llm);
         statusList.setAdapter(adapter);

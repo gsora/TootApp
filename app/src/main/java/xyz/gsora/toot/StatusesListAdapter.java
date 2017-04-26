@@ -220,7 +220,9 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
                 reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
                 reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
 
-                Toot.getAppContext().startActivity(reply);
+                reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                v.getContext().startActivity(reply);
+
             });
         }
     }
