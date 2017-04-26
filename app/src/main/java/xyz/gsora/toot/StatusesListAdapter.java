@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -97,7 +97,13 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
             holder.contentWarningText.setText("");
         }
 
-        Picasso.with(parentCtx).load(avatar).into(holder.avatar);
+        Glide
+                .with(parentCtx)
+                .load(avatar)
+                .centerCrop()
+                .placeholder(R.mipmap.missing_avatar)
+                .crossFade()
+                .into(holder.avatar);
 
         // format the timestamp according to the device's setting
         SimpleDateFormat fmt;
