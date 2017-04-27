@@ -41,9 +41,23 @@ public interface API {
     );
 
     @GET
+        // to use with Links forward page
     Observable<Response<Status[]>> getHomeTimeline(
             @Header("Authorization") String authBearer,
             @Url String url
+    );
+
+    @GET("api/v1/timelines/public")
+    Observable<Response<Status[]>> getPublicTimeline(
+            @Header("Authorization") String authBearer,
+            @Query("local") String local
+    );
+
+    @GET
+    Observable<Response<Status[]>> getPublicTimeline(
+            @Header("Authorization") String authBearer,
+            @Url String url,
+            @Query("local") String local
     );
 
     @FormUrlEncoded

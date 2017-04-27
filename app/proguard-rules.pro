@@ -67,3 +67,6 @@
 
 # for DexGuard only
 -keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+
+-keep class xyz.gsora.toot.FABBehavior { *; }
+-keep interface xyz.gsora.toot.FABBehavior { *; }

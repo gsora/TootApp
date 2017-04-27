@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Tabs>
+    <tab
+        icon="@drawable/ic_home_primarydark_24dp"
+        id="@+id/timeline"
+        title="Timeline"/>
+    <tab
+        icon="@drawable/ic_notifications_black_24dp"
+        id="@+id/notifications"
+        title="Notifications"/>
+    <tab
+        icon="@drawable/ic_group_primarydark_24dp"
+        id="@+id/local"
+        title="Local"/>
+    <tab
+        icon="@drawable/ic_language_primarydark_24dp"
+        id="@+id/federated"
+        title="Federated"/>
+    <tab
+        icon="@drawable/ic_star_primarydark_24dp"
+        id="@+id/favorites"
+        title="Favorites"/>
+</Tabs>

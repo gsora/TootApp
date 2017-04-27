@@ -47,6 +47,11 @@ public class Mastodon {
         return ourInstance;
     }
 
+    /**
+     * An OkHttpClient with logging capabilities
+     *
+     * @return OkHttpClient which logs every step of the request
+     */
     public OkHttpClient logger() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -136,6 +141,17 @@ public class Mastodon {
         );
     }
 
+    /**
+     * Post a status as the current logged user
+     *
+     * @param statusContent    content of the status to post
+     * @param inReplyToId      id of the status to reply to, optional
+     * @param mediaIds         array of Base64-encoded images to post, max 4, optional
+     * @param sensitive        mark the status as sensitive, optional
+     * @param spoilerText      text to prepend to the status, actually creating a "Content warning", optional
+     * @param statusVisibility type of the visibility the status needs to have, optional
+     * @return the status posted
+     */
     public Observable<Response<Status>> postPublicStatus(String statusContent, String inReplyToId, List<String> mediaIds, Boolean sensitive, String spoilerText, StatusVisibility statusVisibility) {
         Map<String, Object> fields = new HashMap<String, Object>();
         fields.put("status", statusContent);
@@ -177,6 +193,61 @@ public class Mastodon {
         );
     }
 
+    /**
+     * Get the public (federated) timeline
+     *
+     * @return an array of Status containing the newest federated statuses
+     */
+    public Observable<Response<Status[]>> getPublicTimeline() {
+        return buildRxRetrofit().create(API.class).getPublicTimeline(
+                Toot.buildBearer(),
+                null
+        );
+    }
+
+    /**
+     * Get the public (federated) timeline
+     *
+     * @param url page to retrieve
+     * @return an array of Status containing the newest federated statuses at the given url
+     */
+    public Observable<Response<Status[]>> getPublicTimeline(String url) {
+        return buildRxRetrofit().create(API.class).getPublicTimeline(
+                Toot.buildBearer(),
+                url,
+                null
+        );
+    }
+
+    /**
+     * Get the local timeline
+     *
+     * @return an array of Status containing the newest local statuses
+     */
+    public Observable<Response<Status[]>> getLocalTimeline() {
+        return buildRxRetrofit().create(API.class).getPublicTimeline(
+                Toot.buildBearer(),
+                "local"
+        );
+    }
+
+    /**
+     * Get the public local timeline
+     *
+     * @param url page to retrieve
+     * @return an array of Status containing the newest local statuses at the given url
+     */
+    public Observable<Response<Status[]>> getLocalTimeline(String url) {
+        return buildRxRetrofit().create(API.class).getPublicTimeline(
+                Toot.buildBearer(),
+                url,
+                "local"
+        );
+    }
+
+    /**
+     * Types of status visibility admitted by Mastodon instances
+     */
     public enum StatusVisibility {
         PUBLIC,
         DIRECT,
