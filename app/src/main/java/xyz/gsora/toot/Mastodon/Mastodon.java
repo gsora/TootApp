@@ -214,8 +214,8 @@ public class Mastodon {
     public Observable<Response<Status[]>> getPublicTimeline(String url) {
         return buildRxRetrofit().create(API.class).getPublicTimeline(
                 Toot.buildBearer(),
-                null,
-                url
+                url,
+                null
         );
     }
 
@@ -240,8 +240,8 @@ public class Mastodon {
     public Observable<Response<Status[]>> getLocalTimeline(String url) {
         return buildRxRetrofit().create(API.class).getPublicTimeline(
                 Toot.buildBearer(),
-                "local",
-                url
+                url,
+                "local"
         );
     }
 

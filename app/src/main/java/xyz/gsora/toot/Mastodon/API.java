@@ -47,17 +47,17 @@ public interface API {
             @Url String url
     );
 
-    @GET("/api/v1/timelines/public")
+    @GET("api/v1/timelines/public")
     Observable<Response<Status[]>> getPublicTimeline(
             @Header("Authorization") String authBearer,
             @Query("local") String local
     );
 
-    @GET("/api/v1/timelines/public")
+    @GET
     Observable<Response<Status[]>> getPublicTimeline(
             @Header("Authorization") String authBearer,
-            @Query("local") String local,
-            @Url String url
+            @Url String url,
+            @Query("local") String local
     );
 
     @FormUrlEncoded
