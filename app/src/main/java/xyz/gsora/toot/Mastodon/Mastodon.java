@@ -246,6 +246,30 @@ public class Mastodon {
     }
 
     /**
+     * Returns the first page of the user's favorites
+     *
+     * @return an array of Status containing the user's favorites first page
+     */
+    public Observable<Response<Status[]>> getFavorites() {
+        return buildRxRetrofit().create(API.class).getFavorites(
+                Toot.buildBearer()
+        );
+    }
+
+    /**
+     * Returns the page of the user's favorites located by the URL
+     *
+     * @param url page to retrieve
+     * @return an array of Status containing the user's favorites at the given URL
+     */
+    public Observable<Response<Status[]>> getFavorites(String url) {
+        return buildRxRetrofit().create(API.class).getFavorites(
+                Toot.buildBearer(),
+                url
+        );
+    }
+
+    /**
      * Types of status visibility admitted by Mastodon instances
      */
     public enum StatusVisibility {

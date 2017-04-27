@@ -60,6 +60,18 @@ public interface API {
             @Query("local") String local
     );
 
+    @GET("api/v1/favourites")
+    Observable<Response<Status[]>> getFavorites(
+            @Header("Authorization") String authBearer
+    );
+
+    @GET
+// to use with Links forward page
+    Observable<Response<Status[]>> getFavorites(
+            @Header("Authorization") String authBearer,
+            @Url String url
+    );
+
     @FormUrlEncoded
     @POST("api/v1/statuses")
     Observable<Response<Status>> postStatus(

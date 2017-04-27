@@ -207,7 +207,17 @@ public class Timeline extends Fragment {
                 }
                 break;
             case FAVORITES:
-                statuses = doodad(page);
+                if (nextPage == null || !page) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "no previous page, loading the first one");
+                    }
+                    statuses = m.getFavorites();
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "got previous page, loading it!");
+                    }
+                    statuses = m.getFavorites(nextPage);
+                }
                 break;
             case NOTIFICATIONS:
                 statuses = doodad(page);
@@ -237,25 +247,26 @@ public class Timeline extends Fragment {
     }
 
     private void updateData(Response<Status[]> statuses) {
-        debugCallNums();
-        realm.executeTransaction((Realm r) -> {
-            for (Status s : statuses.body()) {
-                if (s.getReblog() == null) {
-                    s.setThisIsABoost(false);
-                } else {
-                    s.setThisIsABoost(true);
+        if (!(statuses.body().length <= 0)) { // check if there are statuses first
+            debugCallNums();
+            realm.executeTransaction((Realm r) -> {
+                for (Status s : statuses.body()) {
+                    if (s.getReblog() == null) {
+                        s.setThisIsABoost(false);
+                    } else {
+                        s.setThisIsABoost(true);
+                    }
+                    if (realm.where(Status.class).equalTo("id", s.getId()).count() <= 0) {
+                        r.insertOrUpdate(s);
+                    }
                 }
-                if (realm.where(Status.class).equalTo("id", s.getId()).count() <= 0) {
-                    r.insertOrUpdate(s);
-                }
-            }
-        });
+            });
 
+            String links = statuses.headers().get("Link");
+            Link next = LinkParser.parseNext(links);
+            nextPage = next.getURL();
+        }
         refresh.setRefreshing(false);
-
-        String links = statuses.headers().get("Link");
-        Link next = LinkParser.parseNext(links);
-        nextPage = next.getURL();
         loading = true;
     }
 
