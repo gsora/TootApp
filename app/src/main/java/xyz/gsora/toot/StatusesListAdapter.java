@@ -99,8 +99,6 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         Glide
                 .with(parentCtx)
                 .load(avatar)
-                .centerCrop()
-                .placeholder(R.mipmap.missing_avatar)
                 .crossFade()
                 .into(holder.avatar);
 
