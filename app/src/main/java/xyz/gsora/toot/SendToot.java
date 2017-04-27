@@ -25,6 +25,7 @@ import butterknife.ButterKnife;
 import es.dmoral.toasty.Toasty;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class SendToot extends AppCompatActivity {
 
@@ -55,7 +56,7 @@ public class SendToot extends AppCompatActivity {
         oldColors = characters_remaining.getTextColors();
 
         Intent reply = getIntent();
-        if (reply.getAction() == REPLY_ACTION) {
+        if (reply.getAction().equals(REPLY_ACTION)) {
             replyToId = reply.getStringExtra(REPLY_TO_ID);
             StringBuilder handlesString = new StringBuilder();
             ArrayList<String> handles = reply.getStringArrayListExtra(REPLY_TO);
@@ -111,7 +112,7 @@ public class SendToot extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 Integer len = 500 - toot_content.length();
-                characters_remaining.setText(len.toString());
+                characters_remaining.setText(String.format(Locale.getDefault(), "%d", len));
 
                 Integer color = GetTextColor(getApplicationContext(), len);
 
@@ -144,9 +145,7 @@ public class SendToot extends AppCompatActivity {
         PopupMenu popup = new PopupMenu(SendToot.this, v);
         popup.getMenuInflater().inflate(R.menu.set_visibility_menu, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+        popup.setOnMenuItemClickListener((MenuItem item) -> {
                 Log.d(TAG, String.valueOf(item.getItemId()));
                 rV.setImageDrawable(item.getIcon());
                 switch(item.getItemId()) {
@@ -167,7 +166,6 @@ public class SendToot extends AppCompatActivity {
 
                 }
                 return true;
-            }
         });
 
         MenuPopupHelper menuHelper = new MenuPopupHelper(SendToot.this, (MenuBuilder) popup.getMenu(), v);

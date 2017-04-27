@@ -15,11 +15,11 @@
     <EditText
         android:id="@+id/toot_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:fadeScrollbars="false"
-        android:gravity="top|left"
-        android:hint="Your toot goes here!"
+        android:gravity="top|start"
+        android:hint="@string/your_toot_goes_here"
         android:imeOptions="normal"
         android:inputType="textCapSentences|textAutoCorrect|textAutoComplete|textMultiLine|textImeMultiLine"
         android:scrollbars="vertical"/>
@@ -34,13 +34,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="500"/>
+            android:text="@string/_500"/>
 
         <ImageButton
             android:id="@+id/set_visibility_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
             android:background="@null"
             android:onClick="showVisibilityMenu"
             android:src="@drawable/ic_language_black_24dp"/>

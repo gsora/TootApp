@@ -145,7 +145,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
             p.setMargins(0, 0, 0, 16);
             holder.boostAuthor.setLayoutParams(p);
             holder.boostAuthor.setVisibility(View.VISIBLE);
-            holder.boostAuthor.setText("Boosted by " + booster);
+            holder.boostAuthor.setText(String.format(parentCtx.getString(R.string.boostedBy), booster));
             holder.boostAuthor.setTextSize(12.0f);
         } else {
             LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
@@ -191,7 +191,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         private Integer leftStatus;
         private Integer rightStatus;
 
-        public ViewHolder(View v) {
+        ViewHolder(View v) {
             super(v);
             data = null;
             ButterKnife.bind(this, v);

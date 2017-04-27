@@ -5,24 +5,24 @@
     <item
         android:id="@+id/visibility_public"
         android:icon="@drawable/ic_language_black_24dp"
-        android:title="Public"/>
+        android:title="@string/publicStr"/>
 
     <item
         android:id="@+id/visibility_unlisted"
         android:icon="@drawable/ic_lock_open_black_24dp"
-        android:title="Unlisted"
+        android:title="@string/unlisted"
         app:showAsAction="ifRoom"
         />
 
     <item
         android:id="@+id/visibility_private"
         android:icon="@drawable/ic_lock_outline_black_24dp"
-        android:title="Private"
+        android:title="@string/privateStr"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/visibility_direct"
         android:icon="@drawable/ic_local_post_office_black_24dp"
-        android:title="Direct"
+        android:title="@string/direct"
         app:showAsAction="ifRoom"/>
 </menu>

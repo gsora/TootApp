@@ -153,7 +153,7 @@ public class Mastodon {
      * @return the status posted
      */
     public Observable<Response<Status>> postPublicStatus(String statusContent, String inReplyToId, List<String> mediaIds, Boolean sensitive, String spoilerText, StatusVisibility statusVisibility) {
-        Map<String, Object> fields = new HashMap<String, Object>();
+        Map<String, Object> fields = new HashMap<>();
         fields.put("status", statusContent);
 
         if (inReplyToId != null) {
@@ -164,9 +164,7 @@ public class Mastodon {
             fields.put("media_ids", mediaIds);
         }
 
-        if (sensitive) {
-            fields.put("sensitive", sensitive);
-        }
+        fields.put("sensitive", sensitive);
 
         if (spoilerText != null) {
             fields.put("spoiler_text", spoilerText);
