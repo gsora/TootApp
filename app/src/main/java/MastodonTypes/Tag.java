@@ -1,15 +1,16 @@
 package MastodonTypes;
 
-/**
- * Created by gsora on 4/21/17.
- * <p>
- * A Tag present in a Mastodon Status object.
+/*
+  Created by gsora on 4/21/17.
+  <p>
+  A Tag present in a Mastodon Status object.
  */
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import io.realm.RealmObject;
 
+@SuppressWarnings("unused")
 public class Tag extends RealmObject {
 
     @SerializedName("name")

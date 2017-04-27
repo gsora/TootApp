@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
+@SuppressWarnings("unused")
 public class Status extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = 4983372382391510544L;

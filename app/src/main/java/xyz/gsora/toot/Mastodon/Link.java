@@ -1,5 +1,6 @@
 package xyz.gsora.toot.Mastodon;
 
+@SuppressWarnings("unused")
 public class Link {
 
     private String URL;

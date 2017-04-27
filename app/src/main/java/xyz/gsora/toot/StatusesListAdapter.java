@@ -34,16 +34,15 @@ import java.util.TimeZone;
  * <p>
  * Custom adapter, useful for listing some statuses.
  */
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings("ALL")
 public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, StatusesListAdapter.ViewHolder> {
 
     private static final String TAG = StatusesListAdapter.class.getSimpleName();
-    private static String systemLocale;
     private final Context parentCtx;
 
     public StatusesListAdapter(RealmResults<Status> data, String locale, Context parentCtx) {
         super(data, true);
-        systemLocale = locale;
+        String systemLocale = locale;
         this.parentCtx = parentCtx;
         setHasStableIds(true);
     }
@@ -166,6 +165,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder
+    @SuppressWarnings("unused")
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public Status data;
         // each data item is just a string in this case
@@ -186,9 +186,13 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
         @BindView(R.id.reply)
         ImageButton replyButton;
 
+        @SuppressWarnings("unused")
         private Integer bottomStatus;
+        @SuppressWarnings("unused")
         private Integer topStatus;
+        @SuppressWarnings("unused")
         private Integer leftStatus;
+        @SuppressWarnings("unused")
         private Integer rightStatus;
 
         ViewHolder(View v) {

@@ -33,7 +33,7 @@ public class Mastodon {
      * Standard scopes.
      */
     public static final String SCOPES = "read write follow";
-    private static Mastodon ourInstance = new Mastodon();
+    private static final Mastodon ourInstance = new Mastodon();
 
     private Mastodon() {
     }
@@ -52,7 +52,7 @@ public class Mastodon {
      *
      * @return OkHttpClient which logs every step of the request
      */
-    public OkHttpClient logger() {
+    private OkHttpClient logger() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder client = new OkHttpClient.Builder();

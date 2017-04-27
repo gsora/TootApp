@@ -17,6 +17,7 @@ import java.util.ArrayList;
  * An {@link IntentService} subclass for handling asynchronous toot sending.
  * <p>
  */
+@SuppressWarnings("WeakerAccess")
 public class PostStatus extends IntentService {
 
     public static final String STATUS = "xyz.gsora.toot.extra.status";
@@ -26,7 +27,6 @@ public class PostStatus extends IntentService {
     public static final String SPOILERTEXT = "xyz.gsora.toot.extra.spoilertext";
     public static final String VISIBILITY = "xyz.gsora.toot.extra.visibility";
     private static final String TAG = PostStatus.class.getSimpleName();
-    private Mastodon m;
     private Realm realm;
 
     public PostStatus() {
@@ -35,7 +35,7 @@ public class PostStatus extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        m = Mastodon.getInstance();
+        Mastodon m = Mastodon.getInstance();
         realm = Toot.getRealm();
 
         if (intent != null) {

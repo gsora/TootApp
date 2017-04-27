@@ -22,8 +22,6 @@ public class TimelineFragmentContainer extends AppCompatActivity {
     @BindView(R.id.BottomNavigation)
     BottomBar bottomBar;
 
-    private MenuItem toot_settings_button;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +55,7 @@ public class TimelineFragmentContainer extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.settings_menu_timeline, menu);
-        toot_settings_button = menu.findItem(R.id.toot_settings_button);
+        @SuppressWarnings("unused") MenuItem toot_settings_button = menu.findItem(R.id.toot_settings_button);
 
         return super.onCreateOptionsMenu(menu);
     }

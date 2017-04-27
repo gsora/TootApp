@@ -62,7 +62,7 @@ public class SendToot extends AppCompatActivity {
             ArrayList<String> handles = reply.getStringArrayListExtra(REPLY_TO);
             for (String s :
                     handles) {
-                handlesString.append("@" + s + " ");
+                handlesString.append("@").append(s).append(" ");
 
             }
             toot_content.append(handlesString.toString());

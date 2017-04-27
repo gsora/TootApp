@@ -10,6 +10,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
+@SuppressWarnings("unused")
 public class MediaAttachment extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = 8349948183094094758L;

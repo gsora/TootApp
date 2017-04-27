@@ -14,6 +14,7 @@ import java.util.Map;
  * <p>
  * Mastodon API interface.
  */
+@SuppressWarnings({"SameParameterValue", "DefaultAnnotationParam", "WeakerAccess"})
 public interface API {
 
     @FormUrlEncoded

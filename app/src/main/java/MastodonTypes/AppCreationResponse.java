@@ -1,14 +1,15 @@
 package MastodonTypes;
 
-/**
+/*
  * Created by gsora on 4/20/17.
- * <p>
+ *
  * This class represents what the Mastodon API gives us after a succesful POST request to /api/v1/apps.
  */
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("unused")
 public class AppCreationResponse {
 
     @SerializedName("id")

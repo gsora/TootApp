@@ -37,6 +37,7 @@ import java.util.Locale;
  * Use the {@link Timeline#newInstance} factory method to
  * create an instance of this fragment.
  */
+@SuppressWarnings({"EmptyMethod", "unused"})
 public class Timeline extends Fragment {
 
     private static final String TAG = TimelineFragmentContainer.class.getSimpleName();
@@ -45,7 +46,6 @@ public class Timeline extends Fragment {
     private static final String TIMELINE_FEDERATED = "Federated timeline";
     private static final String NOTIFICATIONS = "Notifications";
     private static final String FAVORITES = "Favorites";
-    private static String systemLocale;
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
     @BindView(R.id.userTimelineRefresh)
@@ -56,7 +56,6 @@ public class Timeline extends Fragment {
     private LinearLayoutManager llm;
     private Realm realm;
     private Mastodon m;
-    private StatusesListAdapter adapter;
     private String nextPage;
     private Boolean loading = true;
     private String tabBarTitle;
@@ -109,7 +108,7 @@ public class Timeline extends Fragment {
         realm = Toot.getRealm();
         m = Mastodon.getInstance();
         nextPage = null;
-        systemLocale = Locale.getDefault().getLanguage();
+        String systemLocale = Locale.getDefault().getLanguage();
         setUpRecyclerView(systemLocale);
 
         if (BuildConfig.DEBUG) {
@@ -129,7 +128,7 @@ public class Timeline extends Fragment {
 
     private void setUpRecyclerView(String locale) {
         RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
-        adapter = new StatusesListAdapter(statuses, locale, getActivity());
+        StatusesListAdapter adapter = new StatusesListAdapter(statuses, locale, getActivity());
         llm = new LinearLayoutManager(getActivity());
         statusList.setLayoutManager(llm);
         statusList.setAdapter(adapter);
@@ -302,6 +301,7 @@ public class Timeline extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    @SuppressWarnings("unused")
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

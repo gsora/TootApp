@@ -15,6 +15,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        //noinspection GroovyMissingReturnStatement
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -24,6 +25,7 @@ android {
             }
         }
 
+        //noinspection GroovyMissingReturnStatement
         debug {
             applicationVariants.all { variant ->
                 renameAPK(variant, defaultConfig, 'D')
@@ -45,6 +47,7 @@ def renameAPK(variant, defaultConfig, buildType) {
     if (buildType == 'D') {
         variant.outputs.each { output ->
             def file = output.packageApplication.outputFile
+            //noinspection GroovyAssignabilityCheck
             output.packageApplication.outputFile = new File(file.parent, applicationName + "-debugRelease" + ".apk")
         }
     } else {
@@ -52,7 +55,9 @@ def renameAPK(variant, defaultConfig, buildType) {
             def formattedDate = new Date().format('yyMMdd-hhmm')
 
             def file = output.packageApplication.outputFile
+            //noinspection GroovyAssignabilityCheck,GroovyAssignabilityCheck
             def fileName = applicationName + "_v" + defaultConfig.versionName + "_" + formattedDate + "_" + buildType + ".apk"
+            //noinspection GroovyAssignabilityCheck
             output.packageApplication.outputFile = new File(file.parent, fileName)
         }
     }

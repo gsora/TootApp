@@ -3,7 +3,7 @@ package xyz.gsora.toot.Mastodon;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
+@SuppressWarnings({"ResultOfMethodCallIgnored", "unused"})
 public class LinkParser {
 
     private static final Pattern URLPattern = Pattern.compile("<(.*?)>");
