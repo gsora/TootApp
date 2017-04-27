@@ -11,8 +11,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String TAG = LoginActivity.class.getSimpleName();
 
     @BindView(R.id.userAtInstance)
-    TextView userAtInstance;
+    EditText userAtInstance;
     @BindView(R.id.login)
     Button login;
     @BindView(R.id.progress)
@@ -96,7 +96,11 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
+                String result = s.toString().replaceAll(" ", "");
+                if (!s.toString().equals(result)) {
+                    userAtInstance.setText(result);
+                    userAtInstance.setSelection(result.length());
+                }
             }
         });
     }

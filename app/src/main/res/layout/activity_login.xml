@@ -16,7 +16,7 @@
         android:layout_centerVertical="true"
         android:ems="10"
         android:hint="user@instance.com"
-        android:inputType="text"
+        android:inputType="textNoSuggestions"
         android:textAlignment="center"/>
 
     <Button
