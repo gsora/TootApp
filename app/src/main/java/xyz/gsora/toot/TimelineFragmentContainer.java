@@ -50,7 +50,7 @@ public class TimelineFragmentContainer extends AppCompatActivity {
     private void startFragment(Timeline.TimelineContent timelineContent) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.frame, Timeline.newInstance(timelineContent));
-        ft.commit();
+        ft.commitAllowingStateLoss();
     }
 
     // add the settings button
