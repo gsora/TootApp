@@ -23,7 +23,11 @@ import java.util.ArrayList;
  */
 @SuppressWarnings("unused")
 public class RowViewHolder extends RecyclerView.ViewHolder {
+
+    public static final String TAG = RowViewHolder.class.getSimpleName();
+
     public Status data;
+    public int type;
     // each data item is just a string in this case
     public @BindView(R.id.status_author)
     TextView statusAuthor;
@@ -54,19 +58,23 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     @SuppressWarnings("unused")
     private Integer rightStatus;
 
-    public RowViewHolder(View v) {
+    RowViewHolder(View v, int type) {
         super(v);
         data = null;
+        this.type = type;
         ButterKnife.bind(this, v);
         status.setMovementMethod(LinkMovementMethod.getInstance());
 
-        showContentWarning.setOnClickListener((View button) -> {
-            if (status.getTextSize() <= 0.0f) {
-                status.setTextSize(16.0f);
-            } else {
-                status.setTextSize(0.0f);
-            }
-        });
+        // if showContentWarning has been bind
+        if (showContentWarning != null) {
+            showContentWarning.setOnClickListener((View button) -> {
+                if (status.getTextSize() <= 0.0f) {
+                    status.setTextSize(16.0f);
+                } else {
+                    status.setTextSize(0.0f);
+                }
+            });
+        }
 
         replyButton.setOnClickListener((View button) -> {
             Intent reply = new Intent(Toot.getAppContext(), SendToot.class);

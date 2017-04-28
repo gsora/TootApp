@@ -3,10 +3,10 @@ package xyz.gsora.toot;
 import MastodonTypes.Boost;
 import MastodonTypes.Status;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -29,6 +29,11 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
     private static final String TAG = StatusesListAdapter.class.getSimpleName();
     private final Context parentCtx;
 
+    private final int TOOT = 0;
+    private final int TOOT_CW = 1;
+    private final int TOOT_BOOST = 2;
+    private final int TOOT_BOOST_CW = 3;
+
     public StatusesListAdapter(RealmResults<Status> data, String locale, Context parentCtx) {
         super(data, true);
         String systemLocale = locale;
@@ -38,9 +43,41 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
 
     @Override
     public RowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.status_row_layout, parent, false);
-        return new RowViewHolder(v);
+        RowViewHolder viewHolder = null;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        switch (viewType) {
+            case TOOT:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT);
+                }
+                View toot = inflater.inflate(R.layout.status_toot, parent, false);
+                viewHolder = new RowViewHolder(toot, TOOT);
+                break;
+            case TOOT_BOOST:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_BOOST);
+                }
+                View tootBoost = inflater.inflate(R.layout.status_boosted_toot, parent, false);
+                viewHolder = new RowViewHolder(tootBoost, TOOT_BOOST);
+                break;
+            case TOOT_BOOST_CW:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_BOOST_CW);
+                }
+                View tootBoostCw = inflater.inflate(R.layout.status_boosted_toot_cw, parent, false);
+                viewHolder = new RowViewHolder(tootBoostCw, TOOT_BOOST_CW);
+                break;
+            case TOOT_CW:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_CW);
+                }
+                View tootCw = inflater.inflate(R.layout.status_toot_cw, parent, false);
+                viewHolder = new RowViewHolder(tootCw, TOOT_CW);
+                break;
+        }
+
+        return viewHolder;
     }
 
     @Override
@@ -57,33 +94,30 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
 
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText) {
+    @Override
+    public int getItemViewType(int position) {
+        Status toot = getItem(position);
+        // if getThisIsABoost(), cw == null, it's a boost
+        if (toot.getThisIsABoost()) {
+            if (toot.getSpoilerText().length() > 0) {
+                return TOOT_BOOST_CW;
+            }
 
-        holder.statusAuthor.setText(CoolHtml.html(author));
-        holder.status.setText(CoolHtml.html(content));
-        if (spoilerText.length() > 0) {
-            holder.status.setTextSize(0.0f);
-            holder.showContentWarning.setVisibility(View.VISIBLE);
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
-            p.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            p.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-            // ugly hack
-            p.bottomMargin = -16;
-            holder.showContentWarning.setLayoutParams(p);
-            holder.contentWarningText.setTextSize(16.0f);
-            holder.contentWarningText.setVisibility(View.VISIBLE);
-            holder.contentWarningText.setText(spoilerText);
-        } else {
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
-            p.height = 0;
-            p.width = 0;
-            p.bottomMargin = 0;
-            holder.showContentWarning.setLayoutParams(p);
-            holder.status.setTextSize(16.0f);
-            holder.contentWarningText.setTextSize(0.0f);
-            holder.contentWarningText.setText("");
+            return TOOT_BOOST;
         }
 
+        if (toot.getSpoilerText().length() > 0) {
+            // cw != null, it's a toot+cw
+            return TOOT_CW;
+        }
+
+        // Otherwise, it's just a toot
+        return TOOT;
+    }
+
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText) {
+
+        // Standard setup: timestamp and avatar
         Glide
                 .with(parentCtx)
                 .load(avatar)
@@ -125,24 +159,27 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
 
         holder.timestamp.setText(finalTimestamp);
 
-        if (booster != null) {
-            if (BuildConfig.DEBUG) {
-                holder.timestamp.setText(holder.timestamp.getText().toString() + " - boosted by " + booster);
+        // status author, and status
+        holder.statusAuthor.setText(CoolHtml.html(author));
+        holder.status.setText(CoolHtml.html(content));
+
+        // if holder.boostAuthor != null, set it
+        if (holder.boostAuthor != null) {
+            if (booster != null) {
+                if (BuildConfig.DEBUG) {
+                    holder.timestamp.setText(holder.timestamp.getText().toString() + " - boosted by " + booster);
+                }
+                holder.boostAuthor.setText(String.format(parentCtx.getString(R.string.boostedBy), booster));
             }
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
-            p.setMargins(0, 0, 0, 16);
-            holder.boostAuthor.setLayoutParams(p);
-            holder.boostAuthor.setVisibility(View.VISIBLE);
-            holder.boostAuthor.setText(String.format(parentCtx.getString(R.string.boostedBy), booster));
-            holder.boostAuthor.setTextSize(12.0f);
-        } else {
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
-            p.setMargins(0, 0, 0, 0);
-            holder.boostAuthor.setLayoutParams(p);
-            holder.boostAuthor.setVisibility(View.INVISIBLE);
-            holder.boostAuthor.setText("");
-            holder.boostAuthor.setTextSize(0);
         }
+
+        // if holder.contentWarningText != null, set it
+        if (holder.contentWarningText != null) {
+            if (spoilerText.length() > 0) {
+                holder.contentWarningText.setText(spoilerText);
+            }
+        }
+
     }
 
     @SuppressWarnings("ConstantConditions")
