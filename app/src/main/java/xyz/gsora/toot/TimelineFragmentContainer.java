@@ -3,7 +3,7 @@ package xyz.gsora.toot;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -45,10 +45,29 @@ public class TimelineFragmentContainer extends AppCompatActivity {
         startFragment(Timeline.TimelineContent.TIMELINE_MAIN);
     }
 
-    private void startFragment(Timeline.TimelineContent timelineContent) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.frame, Timeline.newInstance(timelineContent));
-        ft.commitAllowingStateLoss();
+    public void startFragment(Timeline.TimelineContent timelineContent) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        final int newBackStackLength = fragmentManager.getBackStackEntryCount() + 1;
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.frame, Timeline.newInstance(timelineContent))
+                .addToBackStack(null)
+                .commit();
+
+        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                int nowCount = fragmentManager.getBackStackEntryCount();
+                if (newBackStackLength != nowCount) {
+                    // we don't really care if going back or forward. we already performed the logic here.
+                    fragmentManager.removeOnBackStackChangedListener(this);
+
+                    if (newBackStackLength > nowCount) { // user pressed back
+                        fragmentManager.popBackStackImmediate();
+                    }
+                }
+            }
+        });
     }
 
     // add the settings button

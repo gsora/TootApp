@@ -65,7 +65,7 @@ public class Timeline extends Fragment {
 
     }
 
-    public static Timeline newInstance(TimelineContent timelineContent) {
+    static Timeline newInstance(TimelineContent timelineContent) {
         Timeline fragment = new Timeline();
         switch (timelineContent) {
             case TIMELINE_MAIN:
