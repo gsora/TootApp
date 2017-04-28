@@ -1,30 +1,19 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Boost;
-import MastodonTypes.Mention;
 import MastodonTypes.Status;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -35,7 +24,7 @@ import java.util.TimeZone;
  * Custom adapter, useful for listing some statuses.
  */
 @SuppressWarnings("ALL")
-public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, StatusesListAdapter.ViewHolder> {
+public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowViewHolder> {
 
     private static final String TAG = StatusesListAdapter.class.getSimpleName();
     private final Context parentCtx;
@@ -48,14 +37,14 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.status_row_layout, parent, false);
-        return new ViewHolder(v);
+        return new RowViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RowViewHolder holder, int position) {
         holder.data = getItem(holder.getAdapterPosition());
         Status s = holder.data;
         Boost sb = s.getReblog();
@@ -68,7 +57,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
 
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, StatusesListAdapter.ViewHolder holder, String spoilerText) {
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText) {
 
         holder.statusAuthor.setText(CoolHtml.html(author));
         holder.status.setText(CoolHtml.html(content));
@@ -160,78 +149,6 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
     @Override
     public long getItemId(int index) {
         return getItem(index).getId();
-    }
-
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    @SuppressWarnings("unused")
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public Status data;
-        // each data item is just a string in this case
-        @BindView(R.id.status_author)
-        TextView statusAuthor;
-        @BindView(R.id.status_text)
-        TextView status;
-        @BindView(R.id.avatar)
-        CircleImageView avatar;
-        @BindView(R.id.boost_author)
-        TextView boostAuthor;
-        @BindView(R.id.timestamp)
-        TextView timestamp;
-        @BindView(R.id.contentWarningText)
-        TextView contentWarningText;
-        @BindView(R.id.showContentWarning)
-        Button showContentWarning;
-        @BindView(R.id.reply)
-        ImageButton replyButton;
-
-        @SuppressWarnings("unused")
-        private Integer bottomStatus;
-        @SuppressWarnings("unused")
-        private Integer topStatus;
-        @SuppressWarnings("unused")
-        private Integer leftStatus;
-        @SuppressWarnings("unused")
-        private Integer rightStatus;
-
-        ViewHolder(View v) {
-            super(v);
-            data = null;
-            ButterKnife.bind(this, v);
-            status.setMovementMethod(LinkMovementMethod.getInstance());
-
-            showContentWarning.setOnClickListener((View button) -> {
-                if (status.getTextSize() <= 0.0f) {
-                    status.setTextSize(16.0f);
-                } else {
-                    status.setTextSize(0.0f);
-                }
-            });
-
-            replyButton.setOnClickListener((View button) -> {
-                Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
-                ArrayList<String> handles = new ArrayList<>();
-
-                handles.add(data.getAccount().getAcct());
-                if (!(data.getMentions().size() <= 0)) {
-                    for (Mention mention : data.getMentions()) {
-                        String acct = mention.getAcct();
-                        if (!acct.contains(Toot.getUsername())) {
-                            handles.add(mention.getAcct());
-                        }
-                    }
-                }
-
-                reply.setAction(SendToot.REPLY_ACTION);
-                reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
-                reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
-
-                reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                v.getContext().startActivity(reply);
-
-            });
-        }
     }
 
 }
