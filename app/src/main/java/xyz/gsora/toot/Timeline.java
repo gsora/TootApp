@@ -89,6 +89,8 @@ public class Timeline extends Fragment {
         View view = inflater.inflate(R.layout.fragment_main_timeline, container, false);
         ButterKnife.bind(this, view);
         m = Mastodon.getInstance();
+        // pull data as soon as we can
+        pullData(false);
         return view;
     }
 

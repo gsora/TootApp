@@ -2,16 +2,16 @@ package xyz.gsora.toot;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by gsora on 4/29/17.
+ *
+ * Fragment adapter for the various timeline types.
  */
-public class TimelinesStatusAdapter extends FragmentPagerAdapter {
+public class TimelinesStatusAdapter extends FragmentStatePagerAdapter {
 
-    private static Integer TIMELINES_COUNT = 5;
-
-    public TimelinesStatusAdapter(FragmentManager fragmentManager) {
+    TimelinesStatusAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
     }
 
@@ -35,6 +35,6 @@ public class TimelinesStatusAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return TIMELINES_COUNT;
+        return 5;
     }
 }
