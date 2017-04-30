@@ -16,4 +16,7 @@
     <string name="nothing">nothing</string>
     <string name="show_content">Show content</string>
     <string name="boostedBy">"Boosted by %1$s"</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

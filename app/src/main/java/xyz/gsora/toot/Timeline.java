@@ -19,6 +19,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import retrofit2.Response;
@@ -40,12 +41,12 @@ import java.util.Locale;
 @SuppressWarnings({"EmptyMethod", "unused"})
 public class Timeline extends Fragment {
 
+    public static final String TIMELINE_MAIN = "Timeline";
+    public static final String TIMELINE_LOCAL = "Local timeline";
+    public static final String TIMELINE_FEDERATED = "Federated timeline";
+    public static final String NOTIFICATIONS = "Notifications";
+    public static final String FAVORITES = "Favorites";
     private static final String TAG = TimelineFragmentContainer.class.getSimpleName();
-    private static final String TIMELINE_MAIN = "Timeline";
-    private static final String TIMELINE_LOCAL = "Local timeline";
-    private static final String TIMELINE_FEDERATED = "Federated timeline";
-    private static final String NOTIFICATIONS = "Notifications";
-    private static final String FAVORITES = "Favorites";
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
     @BindView(R.id.userTimelineRefresh)
@@ -58,8 +59,8 @@ public class Timeline extends Fragment {
     private Mastodon m;
     private String nextPage;
     private Boolean loading = true;
-    private String tabBarTitle;
     private TimelineContent selectedTimeline;
+    private Boolean firstLoad;
 
     public Timeline() {
 
@@ -67,59 +68,39 @@ public class Timeline extends Fragment {
 
     static Timeline newInstance(TimelineContent timelineContent) {
         Timeline fragment = new Timeline();
-        switch (timelineContent) {
-            case TIMELINE_MAIN:
-                fragment.tabBarTitle = TIMELINE_MAIN;
-                break;
-            case TIMELINE_LOCAL:
-                fragment.tabBarTitle = TIMELINE_LOCAL;
-                break;
-            case TIMELINE_FEDERATED:
-                fragment.tabBarTitle = TIMELINE_FEDERATED;
-                break;
-            case FAVORITES:
-                fragment.tabBarTitle = FAVORITES;
-                break;
-            case NOTIFICATIONS:
-                fragment.tabBarTitle = NOTIFICATIONS;
-                break;
-        }
+        Bundle bundle = new Bundle();
 
-        fragment.selectedTimeline = timelineContent;
+        bundle.putSerializable("selectedTimeline", timelineContent);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            selectedTimeline = (TimelineContent) getArguments().getSerializable("selectedTimeline");
+            realm = getRealmForTimelineContent(selectedTimeline);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_timeline, container, false);
         ButterKnife.bind(this, view);
-        getActivity().setTitle(tabBarTitle);
+        m = Mastodon.getInstance();
         return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstance) {
-
-        realm = Toot.getRealm();
-        m = Mastodon.getInstance();
         nextPage = null;
         String systemLocale = Locale.getDefault().getLanguage();
         setUpRecyclerView(systemLocale);
 
-        if (BuildConfig.DEBUG) {
-            emptyRealm();
-        }
 
         // setup the refresh listener
         setupRefreshListener();
-
-        // get some data as soon as possible
-        pullData(false);
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG, Toot.debugSettingsStorage());
@@ -269,10 +250,6 @@ public class Timeline extends Fragment {
         loading = true;
     }
 
-    private void emptyRealm() {
-        realm.executeTransaction((Realm r) -> r.deleteAll());
-    }
-
     private void debugCallNums() {
         Log.d(TAG, "number of calls: " + ++calls);
     }
@@ -281,6 +258,30 @@ public class Timeline extends Fragment {
         refresh.setOnRefreshListener(() ->
                 pullData(false)
         );
+    }
+
+    private Realm getRealmForTimelineContent(TimelineContent timelineContent) {
+        RealmConfiguration config = null;
+
+        switch (timelineContent) {
+            case TIMELINE_MAIN:
+                config = new RealmConfiguration.Builder().name(TIMELINE_MAIN).build();
+                break;
+            case TIMELINE_LOCAL:
+                config = new RealmConfiguration.Builder().name(TIMELINE_LOCAL).build();
+                break;
+            case TIMELINE_FEDERATED:
+                config = new RealmConfiguration.Builder().name(TIMELINE_FEDERATED).build();
+                break;
+            case FAVORITES:
+                config = new RealmConfiguration.Builder().name(FAVORITES).build();
+                break;
+            case NOTIFICATIONS:
+                config = new RealmConfiguration.Builder().name(NOTIFICATIONS).build();
+                break;
+        }
+
+        return Realm.getInstance(config);
     }
 
     public enum TimelineContent {

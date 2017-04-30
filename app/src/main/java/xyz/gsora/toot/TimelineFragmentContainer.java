@@ -3,7 +3,7 @@ package xyz.gsora.toot;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -21,6 +21,10 @@ public class TimelineFragmentContainer extends AppCompatActivity {
     FloatingActionButton newTootFAB;
     @BindView(R.id.BottomNavigation)
     BottomBar bottomBar;
+    @BindView(R.id.viewPager)
+    LockableViewPager viewPager;
+
+    private TimelinesStatusAdapter viewPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,33 +45,46 @@ public class TimelineFragmentContainer extends AppCompatActivity {
             Log.d(TAG, Toot.debugSettingsStorage());
         }
 
-        // start the main timeline fragment
-        startFragment(Timeline.TimelineContent.TIMELINE_MAIN);
-    }
+        // setup the viewpager
+        viewPagerAdapter = new TimelinesStatusAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.setSwipeable(false);
 
-    public void startFragment(Timeline.TimelineContent timelineContent) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        final int newBackStackLength = fragmentManager.getBackStackEntryCount() + 1;
+        // set the base name
+        setTitle(Timeline.TIMELINE_MAIN);
 
-        fragmentManager.beginTransaction()
-                .replace(R.id.frame, Timeline.newInstance(timelineContent))
-                .addToBackStack(null)
-                .commit();
-
-        fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onBackStackChanged() {
-                int nowCount = fragmentManager.getBackStackEntryCount();
-                if (newBackStackLength != nowCount) {
-                    // we don't really care if going back or forward. we already performed the logic here.
-                    fragmentManager.removeOnBackStackChangedListener(this);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
-                    if (newBackStackLength > nowCount) { // user pressed back
-                        fragmentManager.popBackStackImmediate();
-                    }
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        setTitle(Timeline.TIMELINE_MAIN);
+                        break;
+                    case 1:
+                        setTitle(Timeline.NOTIFICATIONS);
+                        break;
+                    case 2:
+                        setTitle(Timeline.TIMELINE_LOCAL);
+                        break;
+                    case 3:
+                        setTitle(Timeline.TIMELINE_FEDERATED);
+                        break;
+                    case 4:
+                        setTitle(Timeline.FAVORITES);
+                        break;
                 }
             }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
         });
+
     }
 
     // add the settings button
@@ -81,26 +98,22 @@ public class TimelineFragmentContainer extends AppCompatActivity {
 
     private void setupBottomBar() {
         bottomBar.setOnTabSelectListener((int tabId) -> {
+            viewPager.setCurrentItem(bottomBar.getCurrentTabPosition());
             switch (tabId) {
                 case R.id.timeline:
-                    Log.d(TAG, "setupBottomBar: pressed timeline");
-                    startFragment(Timeline.TimelineContent.TIMELINE_MAIN);
+                    viewPager.setCurrentItem(0, false);
                     break;
                 case R.id.notifications:
-                    Log.d(TAG, "setupBottomBar: pressed notifications");
-                    startFragment(Timeline.TimelineContent.NOTIFICATIONS);
+                    viewPager.setCurrentItem(1, false);
                     break;
                 case R.id.local:
-                    Log.d(TAG, "setupBottomBar: pressed local");
-                    startFragment(Timeline.TimelineContent.TIMELINE_LOCAL);
+                    viewPager.setCurrentItem(2, false);
                     break;
                 case R.id.federated:
-                    Log.d(TAG, "setupBottomBar: pressed federated");
-                    startFragment(Timeline.TimelineContent.TIMELINE_FEDERATED);
+                    viewPager.setCurrentItem(3, false);
                     break;
                 case R.id.favorites:
-                    Log.d(TAG, "setupBottomBar: pressed favorites");
-                    startFragment(Timeline.TimelineContent.FAVORITES);
+                    viewPager.setCurrentItem(4, false);
                     break;
             }
         });

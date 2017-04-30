@@ -98,7 +98,8 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
     public int getItemViewType(int position) {
         Status toot = getItem(position);
         // if getThisIsABoost(), cw == null, it's a boost
-        if (toot.getThisIsABoost()) {
+        if (toot.getReblog() != null) {
+            Log.d(TAG, "getItemViewType: got boost, spoilerText len:" + toot.getSpoilerText().length());
             if (toot.getSpoilerText().length() > 0) {
                 return TOOT_BOOST_CW;
             }

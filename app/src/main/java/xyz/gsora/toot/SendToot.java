@@ -56,16 +56,18 @@ public class SendToot extends AppCompatActivity {
         oldColors = characters_remaining.getTextColors();
 
         Intent reply = getIntent();
-        if (reply.getAction().equals(REPLY_ACTION)) {
-            replyToId = reply.getStringExtra(REPLY_TO_ID);
-            StringBuilder handlesString = new StringBuilder();
-            ArrayList<String> handles = reply.getStringArrayListExtra(REPLY_TO);
-            for (String s :
-                    handles) {
-                handlesString.append("@").append(s).append(" ");
+        if (reply != null) {
+            if (reply.getAction() != null && reply.getAction().equals(REPLY_ACTION)) {
+                replyToId = reply.getStringExtra(REPLY_TO_ID);
+                StringBuilder handlesString = new StringBuilder();
+                ArrayList<String> handles = reply.getStringArrayListExtra(REPLY_TO);
+                for (String s :
+                        handles) {
+                    handlesString.append("@").append(s).append(" ");
 
+                }
+                toot_content.append(handlesString.toString());
             }
-            toot_content.append(handlesString.toString());
         }
     }
 
