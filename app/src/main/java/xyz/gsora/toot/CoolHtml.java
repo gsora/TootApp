@@ -36,7 +36,7 @@ class CoolHtml {
 
     private static Integer gimmeHtmlModeIfAny() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            return Html.FROM_HTML_MODE_COMPACT;
+            return Html.FROM_HTML_MODE_LEGACY;
         }
 
         return 0;
