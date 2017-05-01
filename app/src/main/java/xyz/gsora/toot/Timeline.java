@@ -1,5 +1,6 @@
 package xyz.gsora.toot;
 
+import MastodonTypes.Notification;
 import MastodonTypes.Status;
 import android.net.Uri;
 import android.os.Bundle;
@@ -41,11 +42,11 @@ import java.util.Locale;
 @SuppressWarnings({"EmptyMethod", "unused"})
 public class Timeline extends Fragment {
 
-    public static final String TIMELINE_MAIN = "Timeline";
-    public static final String TIMELINE_LOCAL = "Local timeline";
-    public static final String TIMELINE_FEDERATED = "Federated timeline";
-    public static final String NOTIFICATIONS = "Notifications";
-    public static final String FAVORITES = "Favorites";
+    static final String TIMELINE_MAIN = "Timeline";
+    static final String TIMELINE_LOCAL = "Local timeline";
+    static final String TIMELINE_FEDERATED = "Federated timeline";
+    static final String NOTIFICATIONS = "Notifications";
+    static final String FAVORITES = "Favorites";
     private static final String TAG = TimelineFragmentContainer.class.getSimpleName();
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
@@ -110,12 +111,22 @@ public class Timeline extends Fragment {
     }
 
     private void setUpRecyclerView(String locale) {
-        RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
-        StatusesListAdapter adapter = new StatusesListAdapter(statuses, locale, getActivity());
-        llm = new LinearLayoutManager(getActivity());
-        statusList.setLayoutManager(llm);
-        statusList.setAdapter(adapter);
-        statusList.setHasFixedSize(false);
+        if (selectedTimeline != TimelineContent.NOTIFICATIONS) {
+            RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
+            StatusesListAdapter adapter = new StatusesListAdapter(statuses, locale, getActivity());
+            llm = new LinearLayoutManager(getActivity());
+            statusList.setLayoutManager(llm);
+            statusList.setAdapter(adapter);
+            statusList.setHasFixedSize(false);
+        } else {
+            RealmResults<Notification> notifications = realm.where(Notification.class).findAllSorted("id", Sort.DESCENDING);
+            NotificationListAdapter adapter = new NotificationListAdapter(notifications, locale, getActivity());
+            llm = new LinearLayoutManager(getActivity());
+            statusList.setLayoutManager(llm);
+            statusList.setAdapter(adapter);
+            statusList.setHasFixedSize(false);
+        }
+
 
         statusList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -201,9 +212,6 @@ public class Timeline extends Fragment {
                     statuses = m.getFavorites(nextPage);
                 }
                 break;
-            case NOTIFICATIONS:
-                statuses = doodad(page);
-                break;
         }
 
         return statuses;
@@ -211,14 +219,38 @@ public class Timeline extends Fragment {
 
     private void pullData(Boolean page) {
         refresh.setRefreshing(true);
-        Observable<Response<Status[]>> statuses = gimmeStatusObservable(page);
-        statuses
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        this::updateData,
-                        this::updateDataError
-                );
+
+        if (selectedTimeline != TimelineContent.NOTIFICATIONS) {
+            Observable<Response<Status[]>> statuses = gimmeStatusObservable(page);
+            statuses
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(
+                            this::updateData,
+                            this::updateDataError
+                    );
+        } else {
+            Observable<Response<Notification[]>> notifications;
+            if (nextPage == null || !page) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "no previous page, loading the first one");
+                }
+                notifications = m.getNotifications();
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "got previous page, loading it!");
+                }
+                notifications = m.getNotifications(nextPage);
+            }
+
+            notifications
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(
+                            this::updateNotificationsData,
+                            this::updateDataError
+                    );
+        }
     }
 
     private void updateDataError(Throwable error) {
@@ -245,6 +277,25 @@ public class Timeline extends Fragment {
             });
 
             String links = statuses.headers().get("Link");
+            Link next = LinkParser.parseNext(links);
+            nextPage = next.getURL();
+        }
+        refresh.setRefreshing(false);
+        loading = true;
+    }
+
+    private void updateNotificationsData(Response<Notification[]> notifications) {
+        if (!(notifications.body().length <= 0)) { // check if there are statuses first
+            debugCallNums();
+            realm.executeTransaction((Realm r) -> {
+                for (Notification n : notifications.body()) {
+                    if (realm.where(Notification.class).equalTo("id", n.getId()).count() <= 0) {
+                        r.insertOrUpdate(n);
+                    }
+                }
+            });
+
+            String links = notifications.headers().get("Link");
             Link next = LinkParser.parseNext(links);
             nextPage = next.getURL();
         }

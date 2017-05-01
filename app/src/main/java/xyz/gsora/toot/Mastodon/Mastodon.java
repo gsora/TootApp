@@ -1,6 +1,7 @@
 package xyz.gsora.toot.Mastodon;
 
 import MastodonTypes.AppCreationResponse;
+import MastodonTypes.Notification;
 import MastodonTypes.OAuthResponse;
 import MastodonTypes.Status;
 import io.reactivex.Observable;
@@ -262,6 +263,30 @@ public class Mastodon {
      */
     public Observable<Response<Status[]>> getFavorites(String url) {
         return buildRxRetrofit().create(API.class).getFavorites(
+                Toot.buildBearer(),
+                url
+        );
+    }
+
+    /**
+     * Returns the first page of user's notification.
+     *
+     * @return an array of Notification.
+     */
+    public Observable<Response<Notification[]>> getNotifications() {
+        return buildRxRetrofit().create(API.class).getNotification(
+                Toot.buildBearer()
+        );
+    }
+
+    /**
+     * Returns the selected page of user's notification.
+     *
+     * @param url page to retrieve
+     * @return an array of Notification.
+     */
+    public Observable<Response<Notification[]>> getNotifications(String url) {
+        return buildRxRetrofit().create(API.class).getNotification(
                 Toot.buildBearer(),
                 url
         );

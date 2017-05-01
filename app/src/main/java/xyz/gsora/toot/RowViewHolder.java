@@ -1,6 +1,7 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Mention;
+import MastodonTypes.Notification;
 import MastodonTypes.Status;
 import android.content.Intent;
 import android.support.annotation.Nullable;
@@ -28,26 +29,39 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
 
     public Status data;
     public int type;
-    // each data item is just a string in this case
-    public @BindView(R.id.status_author)
-    TextView statusAuthor;
-    public @BindView(R.id.status_text)
+    public @Nullable
+    @BindView(R.id.status_text)
     TextView status;
     public @BindView(R.id.avatar)
     CircleImageView avatar;
-    public @Nullable
-    @BindView(R.id.boost_author)
-    TextView boostAuthor;
     public @BindView(R.id.timestamp)
     TextView timestamp;
-    public @Nullable
+    Notification dataNotification;
+    // each data item is just a string in this case
+    @BindView(R.id.status_author)
+    TextView statusAuthor;
+    @Nullable
+    @BindView(R.id.boost_author)
+    TextView boostAuthor;
+    @Nullable
     @BindView(R.id.contentWarningText)
     TextView contentWarningText;
-    public @Nullable
+    @Nullable
     @BindView(R.id.showContentWarning)
     Button showContentWarning;
-    public @BindView(R.id.reply)
+    @Nullable
+    @BindView(R.id.reply)
     ImageButton replyButton;
+    @Nullable
+    @BindView(R.id.boostedByNotification)
+    TextView boostedByNotification;
+    @Nullable
+    @BindView(R.id.favouritedBy)
+    TextView favouritedBy;
+    @Nullable
+    @BindView(R.id.followedBy)
+    TextView followedBy;
+
 
     @SuppressWarnings("unused")
     private Integer bottomStatus;
@@ -61,9 +75,12 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     RowViewHolder(View v, int type) {
         super(v);
         data = null;
+        dataNotification = null;
         this.type = type;
         ButterKnife.bind(this, v);
-        status.setMovementMethod(LinkMovementMethod.getInstance());
+        if (status != null) {
+            status.setMovementMethod(LinkMovementMethod.getInstance());
+        }
 
         // if showContentWarning has been bind
         if (showContentWarning != null) {
@@ -76,27 +93,29 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
-        replyButton.setOnClickListener((View button) -> {
-            Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
-            ArrayList<String> handles = new ArrayList<>();
+        if (replyButton != null) {
+            replyButton.setOnClickListener((View button) -> {
+                Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
+                ArrayList<String> handles = new ArrayList<>();
 
-            handles.add(data.getAccount().getAcct());
-            if (!(data.getMentions().size() <= 0)) {
-                for (Mention mention : data.getMentions()) {
-                    String acct = mention.getAcct();
-                    if (!acct.contains(Toot.getUsername())) {
-                        handles.add(mention.getAcct());
+                handles.add(data.getAccount().getAcct());
+                if (!(data.getMentions().size() <= 0)) {
+                    for (Mention mention : data.getMentions()) {
+                        String acct = mention.getAcct();
+                        if (!acct.contains(Toot.getUsername())) {
+                            handles.add(mention.getAcct());
+                        }
                     }
                 }
-            }
 
-            reply.setAction(SendToot.REPLY_ACTION);
-            reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
-            reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
+                reply.setAction(SendToot.REPLY_ACTION);
+                reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
+                reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
 
-            reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            v.getContext().startActivity(reply);
+                reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                v.getContext().startActivity(reply);
 
-        });
+            });
+        }
     }
 }

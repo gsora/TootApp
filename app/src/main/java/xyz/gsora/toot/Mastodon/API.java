@@ -1,6 +1,7 @@
 package xyz.gsora.toot.Mastodon;
 
 import MastodonTypes.AppCreationResponse;
+import MastodonTypes.Notification;
 import MastodonTypes.OAuthResponse;
 import MastodonTypes.Status;
 import io.reactivex.Observable;
@@ -67,8 +68,18 @@ public interface API {
     );
 
     @GET
-// to use with Links forward page
     Observable<Response<Status[]>> getFavorites(
+            @Header("Authorization") String authBearer,
+            @Url String url
+    );
+
+    @GET("api/v1/notifications")
+    Observable<Response<Notification[]>> getNotification(
+            @Header("Authorization") String authBearer
+    );
+
+    @GET
+    Observable<Response<Notification[]>> getNotification(
             @Header("Authorization") String authBearer,
             @Url String url
     );
