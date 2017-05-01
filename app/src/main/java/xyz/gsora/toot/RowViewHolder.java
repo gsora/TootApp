@@ -98,19 +98,35 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                 Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
                 ArrayList<String> handles = new ArrayList<>();
 
-                handles.add(data.getAccount().getAcct());
-                if (!(data.getMentions().size() <= 0)) {
-                    for (Mention mention : data.getMentions()) {
-                        String acct = mention.getAcct();
-                        if (!acct.contains(Toot.getUsername())) {
-                            handles.add(mention.getAcct());
+                if (dataNotification == null) {
+                    handles.add(data.getAccount().getAcct());
+                    if (!(data.getMentions().size() <= 0)) {
+                        for (Mention mention : data.getMentions()) {
+                            String acct = mention.getAcct();
+                            if (!acct.contains(Toot.getUsername())) {
+                                handles.add(mention.getAcct());
+                            }
+                        }
+                    }
+                } else {
+                    handles.add(dataNotification.getStatus().getAccount().getAcct());
+                    if (!(dataNotification.getStatus().getMentions().size() <= 0)) {
+                        for (Mention mention : dataNotification.getStatus().getMentions()) {
+                            String acct = mention.getAcct();
+                            if (!acct.contains(Toot.getUsername())) {
+                                handles.add(mention.getAcct());
+                            }
                         }
                     }
                 }
 
                 reply.setAction(SendToot.REPLY_ACTION);
                 reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
-                reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
+                if (dataNotification == null) {
+                    reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
+                } else {
+                    reply.putExtra(SendToot.REPLY_TO_ID, dataNotification.getStatus().getId());
+                }
 
                 reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 v.getContext().startActivity(reply);

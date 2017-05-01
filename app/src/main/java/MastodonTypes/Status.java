@@ -123,7 +123,7 @@ public class Status extends RealmObject implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public Object getInReplyToId() {
+    public String getInReplyToId() {
         return inReplyToId;
     }
 

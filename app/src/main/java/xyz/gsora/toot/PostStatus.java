@@ -8,10 +8,13 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Response;
 import xyz.gsora.toot.Mastodon.Mastodon;
 
 import java.util.ArrayList;
+
+import static xyz.gsora.toot.Timeline.TIMELINE_MAIN;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous toot sending.
@@ -36,7 +39,7 @@ public class PostStatus extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Mastodon m = Mastodon.getInstance();
-        realm = Toot.getRealm();
+        realm = Realm.getInstance(new RealmConfiguration.Builder().name(TIMELINE_MAIN).build());
 
         if (intent != null) {
             final String status = intent.getStringExtra(STATUS);
