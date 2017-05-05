@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 
+@SuppressWarnings("unused")
 public class Status extends RealmObject implements Serializable {
 
     private final static long serialVersionUID = 4983372382391510544L;
@@ -122,7 +123,7 @@ public class Status extends RealmObject implements Serializable {
         this.createdAt = createdAt;
     }
 
-    public Object getInReplyToId() {
+    public String getInReplyToId() {
         return inReplyToId;
     }
 
@@ -251,6 +252,9 @@ public class Status extends RealmObject implements Serializable {
     }
 
     public Boolean getFavourited() {
+        if (favourited == null) {
+            return false;
+        }
         return favourited;
     }
 
@@ -259,6 +263,9 @@ public class Status extends RealmObject implements Serializable {
     }
 
     public Boolean getReblogged() {
+        if (reblogged == null) {
+            return false;
+        }
         return reblogged;
     }
 

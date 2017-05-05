@@ -1,5 +1,6 @@
 package xyz.gsora.toot;
 
+import MastodonTypes.Notification;
 import MastodonTypes.Status;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,15 +38,15 @@ import java.util.Locale;
  * Use the {@link Timeline#newInstance} factory method to
  * create an instance of this fragment.
  */
+@SuppressWarnings({"EmptyMethod", "unused"})
 public class Timeline extends Fragment {
 
+    public static final String TIMELINE_MAIN = "Timeline";
+    public static final String TIMELINE_LOCAL = "Local timeline";
+    public static final String TIMELINE_FEDERATED = "Federated timeline";
+    public static final String NOTIFICATIONS = "Notifications";
+    public static final String FAVORITES = "Favorites";
     private static final String TAG = TimelineFragmentContainer.class.getSimpleName();
-    private static final String TIMELINE_MAIN = "Timeline";
-    private static final String TIMELINE_LOCAL = "Local timeline";
-    private static final String TIMELINE_FEDERATED = "Federated timeline";
-    private static final String NOTIFICATIONS = "Notifications";
-    private static final String FAVORITES = "Favorites";
-    private static String systemLocale;
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
     @BindView(R.id.userTimelineRefresh)
@@ -56,71 +57,52 @@ public class Timeline extends Fragment {
     private LinearLayoutManager llm;
     private Realm realm;
     private Mastodon m;
-    private StatusesListAdapter adapter;
     private String nextPage;
     private Boolean loading = true;
-    private String tabBarTitle;
     private TimelineContent selectedTimeline;
+    private Boolean firstLoad;
 
     public Timeline() {
 
     }
 
-    public static Timeline newInstance(TimelineContent timelineContent) {
+    static Timeline newInstance(TimelineContent timelineContent) {
         Timeline fragment = new Timeline();
-        switch (timelineContent) {
-            case TIMELINE_MAIN:
-                fragment.tabBarTitle = TIMELINE_MAIN;
-                break;
-            case TIMELINE_LOCAL:
-                fragment.tabBarTitle = TIMELINE_LOCAL;
-                break;
-            case TIMELINE_FEDERATED:
-                fragment.tabBarTitle = TIMELINE_FEDERATED;
-                break;
-            case FAVORITES:
-                fragment.tabBarTitle = FAVORITES;
-                break;
-            case NOTIFICATIONS:
-                fragment.tabBarTitle = NOTIFICATIONS;
-                break;
-        }
+        Bundle bundle = new Bundle();
 
-        fragment.selectedTimeline = timelineContent;
+        bundle.putSerializable("selectedTimeline", timelineContent);
+        fragment.setArguments(bundle);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            selectedTimeline = (TimelineContent) getArguments().getSerializable("selectedTimeline");
+            realm = RealmBuilder.getRealmForTimelineContent(selectedTimeline);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main_timeline, container, false);
         ButterKnife.bind(this, view);
-        getActivity().setTitle(tabBarTitle);
+        m = Mastodon.getInstance();
+        // pull data as soon as we can
+        pullData(false);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstance) {
-
-        realm = Toot.getRealm();
-        m = Mastodon.getInstance();
         nextPage = null;
-        systemLocale = Locale.getDefault().getLanguage();
+        String systemLocale = Locale.getDefault().getLanguage();
         setUpRecyclerView(systemLocale);
 
-        if (BuildConfig.DEBUG) {
-            emptyRealm();
-        }
 
         // setup the refresh listener
         setupRefreshListener();
-
-        // get some data as soon as possible
-        pullData(false);
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG, Toot.debugSettingsStorage());
@@ -128,12 +110,22 @@ public class Timeline extends Fragment {
     }
 
     private void setUpRecyclerView(String locale) {
-        RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
-        adapter = new StatusesListAdapter(statuses, locale, getActivity());
-        llm = new LinearLayoutManager(getActivity());
-        statusList.setLayoutManager(llm);
-        statusList.setAdapter(adapter);
-        statusList.setHasFixedSize(false);
+        if (selectedTimeline != TimelineContent.NOTIFICATIONS) {
+            RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
+            StatusesListAdapter adapter = new StatusesListAdapter(statuses, locale, getActivity(), selectedTimeline);
+            llm = new LinearLayoutManager(getActivity());
+            statusList.setLayoutManager(llm);
+            statusList.setAdapter(adapter);
+            statusList.setHasFixedSize(false);
+        } else {
+            RealmResults<Notification> notifications = realm.where(Notification.class).findAllSorted("id", Sort.DESCENDING);
+            NotificationListAdapter adapter = new NotificationListAdapter(notifications, locale, getActivity());
+            llm = new LinearLayoutManager(getActivity());
+            statusList.setLayoutManager(llm);
+            statusList.setAdapter(adapter);
+            statusList.setHasFixedSize(false);
+        }
+
 
         statusList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -207,10 +199,17 @@ public class Timeline extends Fragment {
                 }
                 break;
             case FAVORITES:
-                statuses = doodad(page);
-                break;
-            case NOTIFICATIONS:
-                statuses = doodad(page);
+                if (nextPage == null || !page) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "no previous page, loading the first one");
+                    }
+                    statuses = m.getFavorites();
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "got previous page, loading it!");
+                    }
+                    statuses = m.getFavorites(nextPage);
+                }
                 break;
         }
 
@@ -219,14 +218,38 @@ public class Timeline extends Fragment {
 
     private void pullData(Boolean page) {
         refresh.setRefreshing(true);
-        Observable<Response<Status[]>> statuses = gimmeStatusObservable(page);
-        statuses
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(
-                        this::updateData,
-                        this::updateDataError
-                );
+
+        if (selectedTimeline != TimelineContent.NOTIFICATIONS) {
+            Observable<Response<Status[]>> statuses = gimmeStatusObservable(page);
+            statuses
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(
+                            this::updateData,
+                            this::updateDataError
+                    );
+        } else {
+            Observable<Response<Notification[]>> notifications;
+            if (nextPage == null || !page) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "no previous page, loading the first one");
+                }
+                notifications = m.getNotifications();
+            } else {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "got previous page, loading it!");
+                }
+                notifications = m.getNotifications(nextPage);
+            }
+
+            notifications
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(
+                            this::updateNotificationsData,
+                            this::updateDataError
+                    );
+        }
     }
 
     private void updateDataError(Throwable error) {
@@ -237,30 +260,46 @@ public class Timeline extends Fragment {
     }
 
     private void updateData(Response<Status[]> statuses) {
-        debugCallNums();
-        realm.executeTransaction((Realm r) -> {
-            for (Status s : statuses.body()) {
-                if (s.getReblog() == null) {
-                    s.setThisIsABoost(false);
-                } else {
-                    s.setThisIsABoost(true);
+        if (!(statuses.body().length <= 0)) { // check if there are statuses first
+            debugCallNums();
+            realm.executeTransaction((Realm r) -> {
+                for (Status s : statuses.body()) {
+                    if (s.getReblog() == null) {
+                        s.setThisIsABoost(false);
+                    } else {
+                        s.setThisIsABoost(true);
+                    }
+                    if (realm.where(Status.class).equalTo("id", s.getId()).count() <= 0) {
+                        r.insertOrUpdate(s);
+                    }
                 }
-                if (realm.where(Status.class).equalTo("id", s.getId()).count() <= 0) {
-                    r.insertOrUpdate(s);
-                }
-            }
-        });
+            });
 
+            String links = statuses.headers().get("Link");
+            Link next = LinkParser.parseNext(links);
+            nextPage = next.getURL();
+        }
         refresh.setRefreshing(false);
-
-        String links = statuses.headers().get("Link");
-        Link next = LinkParser.parseNext(links);
-        nextPage = next.getURL();
         loading = true;
     }
 
-    private void emptyRealm() {
-        realm.executeTransaction((Realm r) -> r.deleteAll());
+    private void updateNotificationsData(Response<Notification[]> notifications) {
+        if (!(notifications.body().length <= 0)) { // check if there are statuses first
+            debugCallNums();
+            realm.executeTransaction((Realm r) -> {
+                for (Notification n : notifications.body()) {
+                    if (realm.where(Notification.class).equalTo("id", n.getId()).count() <= 0) {
+                        r.insertOrUpdate(n);
+                    }
+                }
+            });
+
+            String links = notifications.headers().get("Link");
+            Link next = LinkParser.parseNext(links);
+            nextPage = next.getURL();
+        }
+        refresh.setRefreshing(false);
+        loading = true;
     }
 
     private void debugCallNums() {
@@ -291,6 +330,7 @@ public class Timeline extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
+    @SuppressWarnings("unused")
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

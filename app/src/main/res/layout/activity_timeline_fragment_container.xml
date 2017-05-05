@@ -8,11 +8,11 @@
                                                  tools:context="xyz.gsora.toot.TimelineFragmentContainer">
 
 
-    <FrameLayout
-        android:id="@+id/frame"
+    <xyz.gsora.toot.LockableViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    </FrameLayout>
+    </xyz.gsora.toot.LockableViewPager>
 
     <com.roughike.bottombar.BottomBar
         android:id="@+id/BottomNavigation"

@@ -7,8 +7,11 @@ import android.util.Log;
 
 /**
  * Created by gsora on 4/10/17.
+ *
+ * Wrapper class for Html.{from, to}Html.
  */
-public class CoolHtml {
+@SuppressWarnings("deprecation")
+class CoolHtml {
 
     public static Spanned html(String s) {
         if(s.length() <= 0) {
@@ -28,13 +31,12 @@ public class CoolHtml {
             text = text.subSequence(0, text.length() - 1);
         }
 
-        Spanned sp = new SpannableString(text);
-        return sp;
+        return new SpannableString(text);
     }
 
-    public static Integer gimmeHtmlModeIfAny() {
+    private static Integer gimmeHtmlModeIfAny() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            return Html.FROM_HTML_MODE_COMPACT;
+            return Html.FROM_HTML_MODE_LEGACY;
         }
 
         return 0;

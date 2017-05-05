@@ -1,6 +1,7 @@
 package xyz.gsora.toot.Mastodon;
 
 import MastodonTypes.AppCreationResponse;
+import MastodonTypes.Notification;
 import MastodonTypes.OAuthResponse;
 import MastodonTypes.Status;
 import io.reactivex.Observable;
@@ -28,13 +29,11 @@ public class Mastodon {
      * The URI where the Mastodon instance will return OAuth codes.
      */
     public static final String REDIRECT_URI = "https://xyz.gsora.toot/oauth";
-
     /**
      * Standard scopes.
      */
     public static final String SCOPES = "read write follow";
-    private static Mastodon ourInstance = new Mastodon();
-
+    private static final Mastodon ourInstance = new Mastodon();
     private Mastodon() {
     }
 
@@ -52,7 +51,7 @@ public class Mastodon {
      *
      * @return OkHttpClient which logs every step of the request
      */
-    public OkHttpClient logger() {
+    private OkHttpClient logger() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -153,7 +152,7 @@ public class Mastodon {
      * @return the status posted
      */
     public Observable<Response<Status>> postPublicStatus(String statusContent, String inReplyToId, List<String> mediaIds, Boolean sensitive, String spoilerText, StatusVisibility statusVisibility) {
-        Map<String, Object> fields = new HashMap<String, Object>();
+        Map<String, Object> fields = new HashMap<>();
         fields.put("status", statusContent);
 
         if (inReplyToId != null) {
@@ -164,9 +163,7 @@ public class Mastodon {
             fields.put("media_ids", mediaIds);
         }
 
-        if (sensitive) {
-            fields.put("sensitive", sensitive);
-        }
+        fields.put("sensitive", sensitive);
 
         if (spoilerText != null) {
             fields.put("spoiler_text", spoilerText);
@@ -246,6 +243,106 @@ public class Mastodon {
     }
 
     /**
+     * Returns the first page of the user's favorites
+     *
+     * @return an array of Status containing the user's favorites first page
+     */
+    public Observable<Response<Status[]>> getFavorites() {
+        return buildRxRetrofit().create(API.class).getFavorites(
+                Toot.buildBearer()
+        );
+    }
+
+    /**
+     * Returns the page of the user's favorites located by the URL
+     *
+     * @param url page to retrieve
+     * @return an array of Status containing the user's favorites at the given URL
+     */
+    public Observable<Response<Status[]>> getFavorites(String url) {
+        return buildRxRetrofit().create(API.class).getFavorites(
+                Toot.buildBearer(),
+                url
+        );
+    }
+
+    /**
+     * Returns the first page of user's notification.
+     *
+     * @return an array of Notification.
+     */
+    public Observable<Response<Notification[]>> getNotifications() {
+        return buildRxRetrofit().create(API.class).getNotification(
+                Toot.buildBearer()
+        );
+    }
+
+    /**
+     * Returns the selected page of user's notification.
+     *
+     * @param url page to retrieve
+     * @return an array of Notification.
+     */
+    public Observable<Response<Notification[]>> getNotifications(String url) {
+        return buildRxRetrofit().create(API.class).getNotification(
+                Toot.buildBearer(),
+                url
+        );
+    }
+
+    /**
+     * Mark a status as favourited
+     *
+     * @param statusId the status to mark
+     * @return the favourited {@link Status}
+     */
+    public Observable<Response<Status>> favourite(String statusId) {
+        return buildRxRetrofit().create(API.class).favourite(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
+     * Mark a status as unfavourited
+     *
+     * @param statusId the status to mark
+     * @return the unfavourited {@link Status}
+     */
+    public Observable<Response<Status>> unfavourite(String statusId) {
+        return buildRxRetrofit().create(API.class).unfavourite(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
+     * Mark a status as reblogged
+     *
+     * @param statusId the status to mark
+     * @return the reblogged {@link Status}
+     */
+    public Observable<Response<Status>> reblog(String statusId) {
+        return buildRxRetrofit().create(API.class).reblog(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
+     * Mark a status as unreblogged
+     *
+     * @param statusId the status to mark
+     * @return the unreblogged {@link Status}
+     */
+    public Observable<Response<Status>> unreblog(String statusId) {
+        return buildRxRetrofit().create(API.class).unreblog(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
      * Types of status visibility admitted by Mastodon instances
      */
     public enum StatusVisibility {
@@ -254,4 +351,6 @@ public class Mastodon {
         PRIVATE,
         UNLISTED
     }
+
+
 }

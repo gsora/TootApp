@@ -1,6 +1,7 @@
 package xyz.gsora.toot.Mastodon;
 
 import MastodonTypes.AppCreationResponse;
+import MastodonTypes.Notification;
 import MastodonTypes.OAuthResponse;
 import MastodonTypes.Status;
 import io.reactivex.Observable;
@@ -14,6 +15,7 @@ import java.util.Map;
  * <p>
  * Mastodon API interface.
  */
+@SuppressWarnings({"SameParameterValue", "DefaultAnnotationParam", "WeakerAccess"})
 public interface API {
 
     @FormUrlEncoded
@@ -33,6 +35,13 @@ public interface API {
             @Field("grant_type") String grantType,
             @Field("code") String code,
             @Field("scope") String scope
+    );
+
+    @FormUrlEncoded
+    @POST("api/v1/statuses")
+    Observable<Response<Status>> postStatus(
+            @Header("Authorization") String authBearer,
+            @FieldMap(encoded = false) Map<String, Object> fields
     );
 
     @GET("api/v1/timelines/home")
@@ -60,10 +69,49 @@ public interface API {
             @Query("local") String local
     );
 
-    @FormUrlEncoded
-    @POST("api/v1/statuses")
-    Observable<Response<Status>> postStatus(
+    @GET("api/v1/favourites")
+    Observable<Response<Status[]>> getFavorites(
+            @Header("Authorization") String authBearer
+    );
+
+    @GET
+    Observable<Response<Status[]>> getFavorites(
             @Header("Authorization") String authBearer,
-            @FieldMap(encoded = false) Map<String, Object> fields
+            @Url String url
+    );
+
+    @GET("api/v1/notifications")
+    Observable<Response<Notification[]>> getNotification(
+            @Header("Authorization") String authBearer
+    );
+
+    @GET
+    Observable<Response<Notification[]>> getNotification(
+            @Header("Authorization") String authBearer,
+            @Url String url
+    );
+
+    @POST("api/v1/statuses/{statusId}/favourite")
+    Observable<Response<Status>> favourite(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
+    );
+
+    @POST("api/v1/statuses/{statusId}/unfavourite")
+    Observable<Response<Status>> unfavourite(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
+    );
+
+    @POST("api/v1/statuses/{statusId}/reblog")
+    Observable<Response<Status>> reblog(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
+    );
+
+    @POST("api/v1/statuses/{statusId}/unreblog")
+    Observable<Response<Status>> unreblog(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
     );
 }

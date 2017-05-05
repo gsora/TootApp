@@ -5,6 +5,7 @@ package xyz.gsora.toot;
  * <p>
  * A class to represent an Username/Instance URI tuple.
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class UserTuple {
     private String user;
     private String instanceURI;

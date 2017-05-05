@@ -1,30 +1,20 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Boost;
-import MastodonTypes.Mention;
 import MastodonTypes.Status;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
-import android.text.method.LinkMovementMethod;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -34,30 +24,70 @@ import java.util.TimeZone;
  * <p>
  * Custom adapter, useful for listing some statuses.
  */
-@SuppressWarnings("ConstantConditions")
-public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, StatusesListAdapter.ViewHolder> {
+@SuppressWarnings("ALL")
+public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowViewHolder> {
 
     private static final String TAG = StatusesListAdapter.class.getSimpleName();
-    private static String systemLocale;
     private final Context parentCtx;
 
-    public StatusesListAdapter(RealmResults<Status> data, String locale, Context parentCtx) {
+    private final int TOOT = 0;
+    private final int TOOT_CW = 1;
+    private final int TOOT_BOOST = 2;
+    private final int TOOT_BOOST_CW = 3;
+
+    private Timeline.TimelineContent timelineContent;
+
+    public StatusesListAdapter(RealmResults<Status> data, String locale, Context parentCtx, Timeline.TimelineContent timelineContent
+    ) {
         super(data, true);
-        systemLocale = locale;
+        String systemLocale = locale;
         this.parentCtx = parentCtx;
         setHasStableIds(true);
+        this.timelineContent = timelineContent;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.status_row_layout, parent, false);
-        return new ViewHolder(v);
+    public RowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        RowViewHolder viewHolder = null;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        switch (viewType) {
+            case TOOT:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT);
+                }
+                View toot = inflater.inflate(R.layout.status_toot, parent, false);
+                viewHolder = new RowViewHolder(toot, TOOT, parentCtx, timelineContent);
+                break;
+            case TOOT_BOOST:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_BOOST);
+                }
+                View tootBoost = inflater.inflate(R.layout.status_boosted_toot, parent, false);
+                viewHolder = new RowViewHolder(tootBoost, TOOT_BOOST, parentCtx, timelineContent);
+                break;
+            case TOOT_BOOST_CW:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_BOOST_CW);
+                }
+                View tootBoostCw = inflater.inflate(R.layout.status_boosted_toot_cw, parent, false);
+                viewHolder = new RowViewHolder(tootBoostCw, TOOT_BOOST_CW, parentCtx, timelineContent);
+                break;
+            case TOOT_CW:
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_CW);
+                }
+                View tootCw = inflater.inflate(R.layout.status_toot_cw, parent, false);
+                viewHolder = new RowViewHolder(tootCw, TOOT_CW, parentCtx, timelineContent);
+                break;
+        }
+
+        return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.data = getItem(holder.getAdapterPosition());
+    public void onBindViewHolder(RowViewHolder holder, int position) {
+        holder.bindData(getItem(holder.getAdapterPosition()));
         Status s = holder.data;
         Boost sb = s.getReblog();
 
@@ -69,33 +99,31 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
 
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, StatusesListAdapter.ViewHolder holder, String spoilerText) {
+    @Override
+    public int getItemViewType(int position) {
+        Status toot = getItem(position);
+        // if getThisIsABoost(), cw == null, it's a boost
+        if (toot.getReblog() != null) {
+            Log.d(TAG, "getItemViewType: got boost, spoilerText len:" + toot.getSpoilerText().length());
+            if (toot.getSpoilerText().length() > 0) {
+                return TOOT_BOOST_CW;
+            }
 
-        holder.statusAuthor.setText(CoolHtml.html(author));
-        holder.status.setText(CoolHtml.html(content));
-        if (spoilerText.length() > 0) {
-            holder.status.setTextSize(0.0f);
-            holder.showContentWarning.setVisibility(View.VISIBLE);
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
-            p.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            p.width = LinearLayout.LayoutParams.WRAP_CONTENT;
-            // ugly hack
-            p.bottomMargin = -16;
-            holder.showContentWarning.setLayoutParams(p);
-            holder.contentWarningText.setTextSize(16.0f);
-            holder.contentWarningText.setVisibility(View.VISIBLE);
-            holder.contentWarningText.setText(spoilerText);
-        } else {
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.showContentWarning.getLayoutParams();
-            p.height = 0;
-            p.width = 0;
-            p.bottomMargin = 0;
-            holder.showContentWarning.setLayoutParams(p);
-            holder.status.setTextSize(16.0f);
-            holder.contentWarningText.setTextSize(0.0f);
-            holder.contentWarningText.setText("");
+            return TOOT_BOOST;
         }
 
+        if (toot.getSpoilerText().length() > 0) {
+            // cw != null, it's a toot+cw
+            return TOOT_CW;
+        }
+
+        // Otherwise, it's just a toot
+        return TOOT;
+    }
+
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText) {
+
+        // Standard setup: timestamp and avatar
         Glide
                 .with(parentCtx)
                 .load(avatar)
@@ -137,97 +165,48 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, Status
 
         holder.timestamp.setText(finalTimestamp);
 
-        if (booster != null) {
-            if (BuildConfig.DEBUG) {
-                holder.timestamp.setText(holder.timestamp.getText().toString() + " - boosted by " + booster);
+        // status author, and status
+        holder.statusAuthor.setText(CoolHtml.html(author));
+        holder.status.setText(CoolHtml.html(content));
+
+        // if holder.boostAuthor != null, set it
+        if (holder.boostAuthor != null) {
+            if (booster != null) {
+                if (BuildConfig.DEBUG) {
+                    holder.timestamp.setText(holder.timestamp.getText().toString() + " - boosted by " + booster);
+                }
+                holder.boostAuthor.setText(String.format(parentCtx.getString(R.string.boostedBy), booster));
             }
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
-            p.setMargins(0, 0, 0, 16);
-            holder.boostAuthor.setLayoutParams(p);
-            holder.boostAuthor.setVisibility(View.VISIBLE);
-            holder.boostAuthor.setText("Boosted by " + booster);
-            holder.boostAuthor.setTextSize(12.0f);
-        } else {
-            LinearLayout.LayoutParams p = (LinearLayout.LayoutParams) holder.boostAuthor.getLayoutParams();
-            p.setMargins(0, 0, 0, 0);
-            holder.boostAuthor.setLayoutParams(p);
-            holder.boostAuthor.setVisibility(View.INVISIBLE);
-            holder.boostAuthor.setText("");
-            holder.boostAuthor.setTextSize(0);
         }
+
+        // if holder.contentWarningText != null, set it
+        if (holder.contentWarningText != null) {
+            if (spoilerText.length() > 0) {
+                holder.contentWarningText.setText(spoilerText);
+            }
+        }
+
+        // if there are boost and star button, use the correct available data
+        if (holder.star != null && holder.boost != null) {
+            if (holder.data.getReblogged()) {
+                holder.boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
+            } else {
+                holder.boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
+            }
+
+            if (holder.data.getFavourited()) {
+                holder.star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
+            } else {
+                holder.star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
+            }
+        }
+
     }
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public long getItemId(int index) {
         return getItem(index).getId();
-    }
-
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public Status data;
-        // each data item is just a string in this case
-        @BindView(R.id.status_author)
-        TextView statusAuthor;
-        @BindView(R.id.status_text)
-        TextView status;
-        @BindView(R.id.avatar)
-        CircleImageView avatar;
-        @BindView(R.id.boost_author)
-        TextView boostAuthor;
-        @BindView(R.id.timestamp)
-        TextView timestamp;
-        @BindView(R.id.contentWarningText)
-        TextView contentWarningText;
-        @BindView(R.id.showContentWarning)
-        Button showContentWarning;
-        @BindView(R.id.reply)
-        ImageButton replyButton;
-
-        private Integer bottomStatus;
-        private Integer topStatus;
-        private Integer leftStatus;
-        private Integer rightStatus;
-
-        public ViewHolder(View v) {
-            super(v);
-            data = null;
-            ButterKnife.bind(this, v);
-            status.setMovementMethod(LinkMovementMethod.getInstance());
-
-            showContentWarning.setOnClickListener((View button) -> {
-                if (status.getTextSize() <= 0.0f) {
-                    status.setTextSize(16.0f);
-                } else {
-                    status.setTextSize(0.0f);
-                }
-            });
-
-            replyButton.setOnClickListener((View button) -> {
-                Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
-                ArrayList<String> handles = new ArrayList<>();
-
-                handles.add(data.getAccount().getAcct());
-                if (!(data.getMentions().size() <= 0)) {
-                    for (Mention mention : data.getMentions()) {
-                        String acct = mention.getAcct();
-                        if (!acct.contains(Toot.getUsername())) {
-                            handles.add(mention.getAcct());
-                        }
-                    }
-                }
-
-                reply.setAction(SendToot.REPLY_ACTION);
-                reply.putStringArrayListExtra(SendToot.REPLY_TO, handles);
-                reply.putExtra(SendToot.REPLY_TO_ID, Long.toString(data.getId()));
-
-                reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                v.getContext().startActivity(reply);
-
-            });
-        }
     }
 
 }

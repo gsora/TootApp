@@ -16,7 +16,8 @@ import java.io.InputStreamReader;
  * <p>
  * This thing should disappear when I'll have a working API interface.
  */
-public class Mocker {
+@SuppressWarnings("unused")
+class Mocker {
 
     private String JSONStringRep;
     private Status[] MockStatuses;

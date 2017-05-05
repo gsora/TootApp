@@ -2,7 +2,21 @@
     <string name="app_name">Toot!</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="login_view_label">Toot</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="user_instance_com">user@instance.com</string>
+    <string name="login">Login</string>
+    <string name="your_toot_goes_here">Your toot goes here!</string>
+    <string name="_500">500</string>
+    <string name="publicStr">Public</string>
+    <string name="unlisted">Unlisted</string>
+    <string name="privateStr">Private</string>
+    <string name="direct">Direct</string>
+    <string name="settings">Settings</string>
+    <string name="statusauthor">statusAuthor</string>
+    <string name="timestamp">timestamp</string>
+    <string name="nothing">nothing</string>
+    <string name="show_content">Show content</string>
+    <string name="boostedBy">"Boosted by %1$s"</string>
+    <string name="favouritedBy">"%1$s favourited your status"</string>
+    <string name="boostedByNotification">"%1$s boosted your status"</string>
+    <string name="followedBy">"%1$s followed you"</string>
 </resources>

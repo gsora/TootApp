@@ -1,14 +1,15 @@
 package MastodonTypes;
 
-/**
- * Created by gsora on 4/20/17.
- * <p>
- * POJO representation of a successful OAuth response.
+/*
+  Created by gsora on 4/20/17.
+  <p>
+  POJO representation of a successful OAuth response.
  */
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("unused")
 public class OAuthResponse {
 
     @SerializedName("access_token")

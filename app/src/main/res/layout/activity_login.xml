@@ -15,8 +15,8 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:ems="10"
-        android:hint="user@instance.com"
-        android:inputType="textNoSuggestions"
+        android:hint="@string/user_instance_com"
+        android:inputType="text"
         android:textAlignment="center"/>
 
     <Button
@@ -27,7 +27,7 @@
         android:layout_centerHorizontal="true"
         android:enabled="false"
         android:onClick="onLoginClick"
-        android:text="Login"/>
+        android:text="@string/login"/>
 
     <ProgressBar
         android:id="@+id/progress"

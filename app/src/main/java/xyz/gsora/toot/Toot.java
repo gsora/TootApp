@@ -1,5 +1,6 @@
 package xyz.gsora.toot;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,8 +12,11 @@ import io.realm.RealmConfiguration;
  * <p>
  * A class containing application-wide methods.
  */
+@SuppressWarnings("WeakerAccess")
 public class Toot extends Application {
 
+    // TODO: fixme
+    @SuppressLint("StaticFieldLeak")
     private static Context context;
 
     public static Context getAppContext() {
@@ -95,16 +99,15 @@ public class Toot extends Application {
     }
 
     public static String debugSettingsStorage() {
-        StringBuilder s = new StringBuilder("Toot settings storage contents: ");
-        s.append("\n\tLogged in: " + hasLoggedIn().toString());
-        s.append("\n\tUsername: " + getUsername());
-        s.append("\n\tInstance URL: " + getInstanceURL());
-        s.append("\n\tClient ID: " + getClientID());
-        s.append("\n\tClient secret: " + getClientSecret());
-        s.append("\n\tAccess token:" + getOAuthAccessToken());
-        s.append("\n\tRefresh token: " + getOAuthRefreshToken());
 
-        return s.toString();
+        return "Toot settings storage contents: " +
+                "\n\tLogged in: " + hasLoggedIn().toString() +
+                "\n\tUsername: " + getUsername() +
+                "\n\tInstance URL: " + getInstanceURL() +
+                "\n\tClient ID: " + getClientID() +
+                "\n\tClient secret: " + getClientSecret() +
+                "\n\tAccess token:" + getOAuthAccessToken() +
+                "\n\tRefresh token: " + getOAuthRefreshToken();
     }
 
     public static String buildBearer() {
