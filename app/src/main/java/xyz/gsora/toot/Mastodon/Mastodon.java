@@ -29,13 +29,11 @@ public class Mastodon {
      * The URI where the Mastodon instance will return OAuth codes.
      */
     public static final String REDIRECT_URI = "https://xyz.gsora.toot/oauth";
-
     /**
      * Standard scopes.
      */
     public static final String SCOPES = "read write follow";
     private static final Mastodon ourInstance = new Mastodon();
-
     private Mastodon() {
     }
 
@@ -293,6 +291,58 @@ public class Mastodon {
     }
 
     /**
+     * Mark a status as favourited
+     *
+     * @param statusId the status to mark
+     * @return the favourited {@link Status}
+     */
+    public Observable<Response<Status>> favourite(String statusId) {
+        return buildRxRetrofit().create(API.class).favourite(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
+     * Mark a status as unfavourited
+     *
+     * @param statusId the status to mark
+     * @return the unfavourited {@link Status}
+     */
+    public Observable<Response<Status>> unfavourite(String statusId) {
+        return buildRxRetrofit().create(API.class).unfavourite(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
+     * Mark a status as reblogged
+     *
+     * @param statusId the status to mark
+     * @return the reblogged {@link Status}
+     */
+    public Observable<Response<Status>> reblog(String statusId) {
+        return buildRxRetrofit().create(API.class).reblog(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
+     * Mark a status as unreblogged
+     *
+     * @param statusId the status to mark
+     * @return the unreblogged {@link Status}
+     */
+    public Observable<Response<Status>> unreblog(String statusId) {
+        return buildRxRetrofit().create(API.class).unreblog(
+                Toot.buildBearer(),
+                statusId
+        );
+    }
+
+    /**
      * Types of status visibility admitted by Mastodon instances
      */
     public enum StatusVisibility {
@@ -301,4 +351,6 @@ public class Mastodon {
         PRIVATE,
         UNLISTED
     }
+
+
 }

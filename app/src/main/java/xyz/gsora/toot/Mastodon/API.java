@@ -37,6 +37,13 @@ public interface API {
             @Field("scope") String scope
     );
 
+    @FormUrlEncoded
+    @POST("api/v1/statuses")
+    Observable<Response<Status>> postStatus(
+            @Header("Authorization") String authBearer,
+            @FieldMap(encoded = false) Map<String, Object> fields
+    );
+
     @GET("api/v1/timelines/home")
     Observable<Response<Status[]>> getHomeTimeline(
             @Header("Authorization") String authBearer
@@ -84,10 +91,27 @@ public interface API {
             @Url String url
     );
 
-    @FormUrlEncoded
-    @POST("api/v1/statuses")
-    Observable<Response<Status>> postStatus(
+    @POST("api/v1/statuses/{statusId}/favourite")
+    Observable<Response<Status>> favourite(
             @Header("Authorization") String authBearer,
-            @FieldMap(encoded = false) Map<String, Object> fields
+            @Path("statusId") String statusId
+    );
+
+    @POST("api/v1/statuses/{statusId}/unfavourite")
+    Observable<Response<Status>> unfavourite(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
+    );
+
+    @POST("api/v1/statuses/{statusId}/reblog")
+    Observable<Response<Status>> reblog(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
+    );
+
+    @POST("api/v1/statuses/{statusId}/unreblog")
+    Observable<Response<Status>> unreblog(
+            @Header("Authorization") String authBearer,
+            @Path("statusId") String statusId
     );
 }
