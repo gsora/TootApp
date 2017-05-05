@@ -51,28 +51,28 @@ public class NotificationListAdapter extends RealmRecyclerViewAdapter<Notificati
                     Log.d(TAG, "onCreateViewHolder: type found: " + FAV);
                 }
                 View toot = inflater.inflate(R.layout.notification_star, parent, false);
-                viewHolder = new RowViewHolder(toot, FAV);
+                viewHolder = new RowViewHolder(toot, FAV, parentCtx, Timeline.TimelineContent.NOTIFICATIONS);
                 break;
             case MENTION:
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onCreateViewHolder: type found: " + MENTION);
                 }
                 View tootBoost = inflater.inflate(R.layout.status_toot, parent, false);
-                viewHolder = new RowViewHolder(tootBoost, MENTION);
+                viewHolder = new RowViewHolder(tootBoost, MENTION, parentCtx, Timeline.TimelineContent.NOTIFICATIONS);
                 break;
             case BOOST:
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onCreateViewHolder: type found: " + BOOST);
                 }
                 View tootBoostCw = inflater.inflate(R.layout.notification_boost, parent, false);
-                viewHolder = new RowViewHolder(tootBoostCw, BOOST);
+                viewHolder = new RowViewHolder(tootBoostCw, BOOST, parentCtx, Timeline.TimelineContent.NOTIFICATIONS);
                 break;
             case FOLLOW:
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onCreateViewHolder: type found: " + FOLLOW);
                 }
                 View tootCw = inflater.inflate(R.layout.notification_follow, parent, false);
-                viewHolder = new RowViewHolder(tootCw, FOLLOW);
+                viewHolder = new RowViewHolder(tootCw, FOLLOW, parentCtx, Timeline.TimelineContent.NOTIFICATIONS);
                 break;
         }
 

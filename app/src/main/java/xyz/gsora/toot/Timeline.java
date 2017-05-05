@@ -20,7 +20,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
-import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import retrofit2.Response;
@@ -42,11 +41,11 @@ import java.util.Locale;
 @SuppressWarnings({"EmptyMethod", "unused"})
 public class Timeline extends Fragment {
 
-    static final String TIMELINE_MAIN = "Timeline";
-    static final String TIMELINE_LOCAL = "Local timeline";
-    static final String TIMELINE_FEDERATED = "Federated timeline";
-    static final String NOTIFICATIONS = "Notifications";
-    static final String FAVORITES = "Favorites";
+    public static final String TIMELINE_MAIN = "Timeline";
+    public static final String TIMELINE_LOCAL = "Local timeline";
+    public static final String TIMELINE_FEDERATED = "Federated timeline";
+    public static final String NOTIFICATIONS = "Notifications";
+    public static final String FAVORITES = "Favorites";
     private static final String TAG = TimelineFragmentContainer.class.getSimpleName();
     @BindView(R.id.statuses_list)
     RecyclerView statusList;
@@ -81,7 +80,7 @@ public class Timeline extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             selectedTimeline = (TimelineContent) getArguments().getSerializable("selectedTimeline");
-            realm = getRealmForTimelineContent(selectedTimeline);
+            realm = RealmBuilder.getRealmForTimelineContent(selectedTimeline);
         }
     }
 
@@ -113,7 +112,7 @@ public class Timeline extends Fragment {
     private void setUpRecyclerView(String locale) {
         if (selectedTimeline != TimelineContent.NOTIFICATIONS) {
             RealmResults<Status> statuses = realm.where(Status.class).findAllSorted("id", Sort.DESCENDING);
-            StatusesListAdapter adapter = new StatusesListAdapter(statuses, locale, getActivity());
+            StatusesListAdapter adapter = new StatusesListAdapter(statuses, locale, getActivity(), selectedTimeline);
             llm = new LinearLayoutManager(getActivity());
             statusList.setLayoutManager(llm);
             statusList.setAdapter(adapter);
@@ -311,30 +310,6 @@ public class Timeline extends Fragment {
         refresh.setOnRefreshListener(() ->
                 pullData(false)
         );
-    }
-
-    private Realm getRealmForTimelineContent(TimelineContent timelineContent) {
-        RealmConfiguration config = null;
-
-        switch (timelineContent) {
-            case TIMELINE_MAIN:
-                config = new RealmConfiguration.Builder().name(TIMELINE_MAIN).build();
-                break;
-            case TIMELINE_LOCAL:
-                config = new RealmConfiguration.Builder().name(TIMELINE_LOCAL).build();
-                break;
-            case TIMELINE_FEDERATED:
-                config = new RealmConfiguration.Builder().name(TIMELINE_FEDERATED).build();
-                break;
-            case FAVORITES:
-                config = new RealmConfiguration.Builder().name(FAVORITES).build();
-                break;
-            case NOTIFICATIONS:
-                config = new RealmConfiguration.Builder().name(NOTIFICATIONS).build();
-                break;
-        }
-
-        return Realm.getInstance(config);
     }
 
     public enum TimelineContent {

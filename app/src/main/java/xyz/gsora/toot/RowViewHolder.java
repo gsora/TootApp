@@ -3,10 +3,13 @@ package xyz.gsora.toot;
 import MastodonTypes.Mention;
 import MastodonTypes.Notification;
 import MastodonTypes.Status;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -14,6 +17,12 @@ import android.widget.TextView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import io.realm.Realm;
+import retrofit2.Response;
+import xyz.gsora.toot.Mastodon.Mastodon;
+import xyz.gsora.toot.Mastodon.ToastMaker;
 
 import java.util.ArrayList;
 
@@ -28,6 +37,8 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     public static final String TAG = RowViewHolder.class.getSimpleName();
 
     public Status data;
+    public Notification dataNotification;
+
     public int type;
     public @Nullable
     @BindView(R.id.status_text)
@@ -36,7 +47,7 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     CircleImageView avatar;
     public @BindView(R.id.timestamp)
     TextView timestamp;
-    Notification dataNotification;
+    public Timeline.TimelineContent timelineContent;
     // each data item is just a string in this case
     @BindView(R.id.status_author)
     TextView statusAuthor;
@@ -61,8 +72,14 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     @Nullable
     @BindView(R.id.followedBy)
     TextView followedBy;
-
-
+    @Nullable
+    @BindView(R.id.star)
+    ImageButton star;
+    @Nullable
+    @BindView(R.id.boost)
+    ImageButton boost;
+    private Context parentCtx;
+    private Mastodon m;
     @SuppressWarnings("unused")
     private Integer bottomStatus;
     @SuppressWarnings("unused")
@@ -72,11 +89,14 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     @SuppressWarnings("unused")
     private Integer rightStatus;
 
-    RowViewHolder(View v, int type) {
+    RowViewHolder(View v, int type, Context parentCtx, Timeline.TimelineContent timelineContent) {
         super(v);
+        m = Mastodon.getInstance();
+        this.timelineContent = timelineContent;
         data = null;
         dataNotification = null;
         this.type = type;
+        this.parentCtx = parentCtx;
         ButterKnife.bind(this, v);
         if (status != null) {
             status.setMovementMethod(LinkMovementMethod.getInstance());
@@ -131,6 +151,85 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                 reply.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 v.getContext().startActivity(reply);
 
+            });
+        }
+
+    }
+
+    private void HandleBadStar(Throwable error) {
+        ToastMaker.buildToasty(parentCtx, error.toString());
+    }
+
+    private void HandleGoodStar(Response<Status> response) {
+        // get a Realm instance
+        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
+        r.executeTransaction((Realm re) -> re.insertOrUpdate(data));
+        r.close();
+    }
+
+    private void HandleBadBoost(Throwable error) {
+        ToastMaker.buildToasty(parentCtx, error.toString());
+    }
+
+    private void HandleGoodBoost(Response<Status> response) {
+        // get a Realm instance
+        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
+        r.executeTransaction((Realm re) -> re.insertOrUpdate(data));
+        r.close();
+    }
+
+    public void bindData(Status data) {
+        this.data = data;
+        // Bind boost and star buttons
+        // we know for sure that if one of the button is null, no button has to be bound
+        if (star != null && boost != null) {
+            star.setOnClickListener((View button) -> {
+                Log.d(TAG, "bindData: status -> " + (data.getContent() == null));
+                if (data.getFavourited()) {
+                    data.setFavourited(false);
+                    m.unfavourite(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    this::HandleGoodStar,
+                                    this::HandleBadStar
+                            );
+                    star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
+                } else {
+                    data.setFavourited(true);
+                    m.favourite(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    this::HandleGoodStar,
+                                    this::HandleBadStar
+                            );
+                    star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
+                }
+            });
+
+            boost.setOnClickListener((View button) -> {
+                if (data.getReblogged()) {
+                    data.setReblogged(false);
+                    m.unreblog(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    this::HandleGoodStar,
+                                    this::HandleBadStar
+                            );
+                    boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
+                } else {
+                    data.setReblogged(true);
+                    m.reblog(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    this::HandleGoodStar,
+                                    this::HandleBadStar
+                            );
+                    boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
+                }
             });
         }
     }

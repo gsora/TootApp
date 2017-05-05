@@ -34,11 +34,15 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
     private final int TOOT_BOOST = 2;
     private final int TOOT_BOOST_CW = 3;
 
-    public StatusesListAdapter(RealmResults<Status> data, String locale, Context parentCtx) {
+    private Timeline.TimelineContent timelineContent;
+
+    public StatusesListAdapter(RealmResults<Status> data, String locale, Context parentCtx, Timeline.TimelineContent timelineContent
+    ) {
         super(data, true);
         String systemLocale = locale;
         this.parentCtx = parentCtx;
         setHasStableIds(true);
+        this.timelineContent = timelineContent;
     }
 
     @Override
@@ -52,28 +56,28 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
                     Log.d(TAG, "onCreateViewHolder: type found: " + TOOT);
                 }
                 View toot = inflater.inflate(R.layout.status_toot, parent, false);
-                viewHolder = new RowViewHolder(toot, TOOT);
+                viewHolder = new RowViewHolder(toot, TOOT, parentCtx, timelineContent);
                 break;
             case TOOT_BOOST:
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_BOOST);
                 }
                 View tootBoost = inflater.inflate(R.layout.status_boosted_toot, parent, false);
-                viewHolder = new RowViewHolder(tootBoost, TOOT_BOOST);
+                viewHolder = new RowViewHolder(tootBoost, TOOT_BOOST, parentCtx, timelineContent);
                 break;
             case TOOT_BOOST_CW:
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_BOOST_CW);
                 }
                 View tootBoostCw = inflater.inflate(R.layout.status_boosted_toot_cw, parent, false);
-                viewHolder = new RowViewHolder(tootBoostCw, TOOT_BOOST_CW);
+                viewHolder = new RowViewHolder(tootBoostCw, TOOT_BOOST_CW, parentCtx, timelineContent);
                 break;
             case TOOT_CW:
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onCreateViewHolder: type found: " + TOOT_CW);
                 }
                 View tootCw = inflater.inflate(R.layout.status_toot_cw, parent, false);
-                viewHolder = new RowViewHolder(tootCw, TOOT_CW);
+                viewHolder = new RowViewHolder(tootCw, TOOT_CW, parentCtx, timelineContent);
                 break;
         }
 
@@ -82,7 +86,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
 
     @Override
     public void onBindViewHolder(RowViewHolder holder, int position) {
-        holder.data = getItem(holder.getAdapterPosition());
+        holder.bindData(getItem(holder.getAdapterPosition()));
         Status s = holder.data;
         Boost sb = s.getReblog();
 
