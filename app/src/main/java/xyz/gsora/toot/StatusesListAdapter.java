@@ -3,6 +3,7 @@ package xyz.gsora.toot;
 import MastodonTypes.Boost;
 import MastodonTypes.Status;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -182,6 +183,21 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         if (holder.contentWarningText != null) {
             if (spoilerText.length() > 0) {
                 holder.contentWarningText.setText(spoilerText);
+            }
+        }
+
+        // if there are boost and star button, use the correct available data
+        if (holder.star != null && holder.boost != null) {
+            if (holder.data.getReblogged()) {
+                holder.boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
+            } else {
+                holder.boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
+            }
+
+            if (holder.data.getFavourited()) {
+                holder.star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
+            } else {
+                holder.star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
             }
         }
 

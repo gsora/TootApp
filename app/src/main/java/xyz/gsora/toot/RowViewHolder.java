@@ -163,7 +163,10 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     private void HandleGoodStar(Response<Status> response) {
         // get a Realm instance
         Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
-        r.executeTransaction((Realm re) -> re.insertOrUpdate(data));
+        r.executeTransaction((Realm re) -> {
+            data.setFavourited(!data.getFavourited());
+            re.insertOrUpdate(data);
+        });
         r.close();
     }
 
@@ -174,7 +177,10 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     private void HandleGoodBoost(Response<Status> response) {
         // get a Realm instance
         Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
-        r.executeTransaction((Realm re) -> re.insertOrUpdate(data));
+        r.executeTransaction((Realm re) -> {
+            data.setReblogged(!data.getReblogged());
+            re.insertOrUpdate(data);
+        });
         r.close();
     }
 
@@ -186,7 +192,6 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
             star.setOnClickListener((View button) -> {
                 Log.d(TAG, "bindData: status -> " + (data.getContent() == null));
                 if (data.getFavourited()) {
-                    data.setFavourited(false);
                     m.unfavourite(String.valueOf(data.getId()))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
@@ -196,7 +201,6 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                             );
                     star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
                 } else {
-                    data.setFavourited(true);
                     m.favourite(String.valueOf(data.getId()))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
@@ -210,7 +214,6 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
 
             boost.setOnClickListener((View button) -> {
                 if (data.getReblogged()) {
-                    data.setReblogged(false);
                     m.unreblog(String.valueOf(data.getId()))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
@@ -220,13 +223,12 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                             );
                     boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
                 } else {
-                    data.setReblogged(true);
                     m.reblog(String.valueOf(data.getId()))
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
                             .subscribe(
-                                    this::HandleGoodStar,
-                                    this::HandleBadStar
+                                    this::HandleGoodBoost,
+                                    this::HandleBadBoost
                             );
                     boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
                 }
