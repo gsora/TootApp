@@ -188,18 +188,34 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
 
         // if there are boost and star button, use the correct available data
         if (holder.star != null && holder.boost != null) {
-            if (holder.data.getReblogged()) {
+            boolean reblogged = false;
+            boolean faved = false;
+
+            if (holder.data.getReblog() != null) {
+                reblogged = holder.data.getReblog().getReblogged();
+            } else {
+                reblogged = holder.data.getReblogged();
+            }
+
+            if (holder.data.getReblog() != null) {
+                faved = holder.data.getReblog().getFavourited();
+            } else {
+                faved = holder.data.getFavourited();
+            }
+
+            if (reblogged) {
                 holder.boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
             } else {
                 holder.boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
             }
 
-            if (holder.data.getFavourited()) {
+            if (faved) {
                 holder.star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
             } else {
                 holder.star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
             }
         }
+
 
     }
 

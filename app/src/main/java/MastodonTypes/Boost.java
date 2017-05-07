@@ -230,6 +230,9 @@ public class Boost extends RealmObject implements Serializable {
     }
 
     public Boolean getFavourited() {
+        if (favourited == null) {
+            return false;
+        }
         return favourited;
     }
 
@@ -238,6 +241,9 @@ public class Boost extends RealmObject implements Serializable {
     }
 
     public Boolean getReblogged() {
+        if (reblogged == null) {
+            return false;
+        }
         return reblogged;
     }
 
