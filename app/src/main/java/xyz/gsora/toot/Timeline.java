@@ -269,9 +269,7 @@ public class Timeline extends Fragment {
                     } else {
                         s.setThisIsABoost(true);
                     }
-                    if (realm.where(Status.class).equalTo("id", s.getId()).count() <= 0) {
-                        r.insertOrUpdate(s);
-                    }
+                    r.insertOrUpdate(s);
                 }
             });
 
