@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#e85235</color>
-    <color name="colorPrimaryDark">#356de8</color>
-    <color name="colorAccent">#ffc23a</color>
-    <color name="statusBarColor">#4fe0a8</color>
+    <color name="colorPrimary">#FF5722</color>
+    <color name="statusBarcolor">#D84315</color>
+    <color name="colorPrimaryDark">#2196F3</color>
+    <color name="colorAccent">#FFC107</color>
+    <color name="statusBarColor">#00BCD4</color>
     <color name="statusHoverTop">#F5F5F5</color>
     <color name="statusHoverBottom">#BDBDBD</color>
     <color name="whiteClear">#ffffff</color>
