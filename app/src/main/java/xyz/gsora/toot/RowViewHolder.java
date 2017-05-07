@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -113,6 +112,78 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
             });
         }
 
+        // Bind boost and star buttons
+        // we know for sure that if one of the button is null, no button has to be bound
+        if (star != null && boost != null) {
+            star.setOnClickListener((View button) -> {
+                if (data.getFavourited()) {
+                    m.unfavourite(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    (Response<Status> s) -> {
+                                        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
+                                        r.executeTransaction((Realm re) -> {
+                                            re.insertOrUpdate(s.body());
+                                        });
+                                        r.close();
+                                        star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
+                                    },
+                                    this::HandleBadStar
+                            );
+                } else {
+                    m.favourite(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    (Response<Status> s) -> {
+                                        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
+                                        r.executeTransaction((Realm re) -> {
+                                            re.insertOrUpdate(s.body());
+                                        });
+                                        r.close();
+                                        star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
+                                    },
+                                    this::HandleBadStar
+                            );
+                }
+            });
+
+            boost.setOnClickListener((View button) -> {
+                if (data.getReblogged()) {
+                    m.unreblog(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    (Response<Status> s) -> {
+                                        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
+                                        r.executeTransaction((Realm re) -> {
+                                            re.insertOrUpdate(s.body());
+                                        });
+                                        r.close();
+                                        boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
+                                    },
+                                    this::HandleBadBoost
+                            );
+                } else {
+                    m.reblog(String.valueOf(data.getId()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe(
+                                    (Response<Status> s) -> {
+                                        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
+                                        r.executeTransaction((Realm re) -> {
+                                            re.insertOrUpdate(s.body());
+                                        });
+                                        r.close();
+                                        boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
+                                    },
+                                    this::HandleBadBoost
+                            );
+                }
+            });
+        }
+
         if (replyButton != null) {
             replyButton.setOnClickListener((View button) -> {
                 Intent reply = new Intent(Toot.getAppContext(), SendToot.class);
@@ -160,79 +231,11 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
         ToastMaker.buildToasty(parentCtx, error.toString());
     }
 
-    private void HandleGoodStar(Response<Status> response) {
-        // get a Realm instance
-        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
-        r.executeTransaction((Realm re) -> {
-            data.setFavourited(!data.getFavourited());
-            re.insertOrUpdate(data);
-        });
-        r.close();
-    }
-
     private void HandleBadBoost(Throwable error) {
         ToastMaker.buildToasty(parentCtx, error.toString());
     }
 
-    private void HandleGoodBoost(Response<Status> response) {
-        // get a Realm instance
-        Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
-        r.executeTransaction((Realm re) -> {
-            data.setReblogged(!data.getReblogged());
-            re.insertOrUpdate(data);
-        });
-        r.close();
-    }
-
     public void bindData(Status data) {
         this.data = data;
-        // Bind boost and star buttons
-        // we know for sure that if one of the button is null, no button has to be bound
-        if (star != null && boost != null) {
-            star.setOnClickListener((View button) -> {
-                Log.d(TAG, "bindData: status -> " + (data.getContent() == null));
-                if (data.getFavourited()) {
-                    m.unfavourite(String.valueOf(data.getId()))
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    this::HandleGoodStar,
-                                    this::HandleBadStar
-                            );
-                    star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
-                } else {
-                    m.favourite(String.valueOf(data.getId()))
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    this::HandleGoodStar,
-                                    this::HandleBadStar
-                            );
-                    star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
-                }
-            });
-
-            boost.setOnClickListener((View button) -> {
-                if (data.getReblogged()) {
-                    m.unreblog(String.valueOf(data.getId()))
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    this::HandleGoodStar,
-                                    this::HandleBadStar
-                            );
-                    boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
-                } else {
-                    m.reblog(String.valueOf(data.getId()))
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(
-                                    this::HandleGoodBoost,
-                                    this::HandleBadBoost
-                            );
-                    boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));
-                }
-            });
-        }
     }
 }
