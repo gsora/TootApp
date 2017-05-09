@@ -11,24 +11,36 @@ android {
         targetSdkVersion 25
         multiDexEnabled true
         versionCode 1
-        versionName "1.0"
+        versionName "0.1"
+        setProperty("archivesBaseName", "Toot")
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         //noinspection GroovyMissingReturnStatement
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            applicationVariants.all { variant ->
-                renameAPK(variant, defaultConfig, 'R')
-            }
         }
 
         //noinspection GroovyMissingReturnStatement
         debug {
-            applicationVariants.all { variant ->
-                renameAPK(variant, defaultConfig, 'D')
+            applicationIdSuffix ".debug." + getVersionName()
+            versionNameSuffix ".debug." + getVersionName()
+        }
+
+        applicationVariants.all { variant ->
+            if (variant.buildType.name == 'release') {
+                variant.mergedFlavor.versionName = android.defaultConfig.versionName
+            }
+
+            if (variant.buildType.name == 'debug') {
+                variant.mergedFlavor.versionName = android.defaultConfig.versionName
+            }
+        }
+        applicationVariants.all { variant ->
+            variant.outputs.each { output ->
+                output.outputFile = new File( output.outputFile.parent,output.outputFile.name.replace(".apk", "-${variant.versionName}.apk"))
             }
         }
     }
@@ -44,23 +56,24 @@ android {
 }
 
 def renameAPK(variant, defaultConfig, buildType) {
-    if (buildType == 'D') {
-        variant.outputs.each { output ->
-            def file = output.packageApplication.outputFile
-            //noinspection GroovyAssignabilityCheck
-            output.packageApplication.outputFile = new File(file.parent, applicationName + "-debugRelease" + ".apk")
-        }
-    } else {
         variant.outputs.each { output ->
             def formattedDate = new Date().format('yyMMdd-hhmm')
 
             def file = output.packageApplication.outputFile
             //noinspection GroovyAssignabilityCheck,GroovyAssignabilityCheck
-            def fileName = applicationName + "_v" + defaultConfig.versionName + "_" + formattedDate + "_" + buildType + ".apk"
+            def fileName = applicationName + "_v" + defaultConfig.versionName + "-" + getVersionName() + "_" + formattedDate + "_" + buildType + ".apk"
             //noinspection GroovyAssignabilityCheck
             output.packageApplication.outputFile = new File(file.parent, fileName)
-        }
     }
+}
+
+def getVersionName() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short' , 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
 }
 
 dependencies {
@@ -69,16 +82,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-
-
-
-
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'org.apache.commons:commons-lang3:3.5'
     compile 'com.android.support:recyclerview-v7:25.3.1'
