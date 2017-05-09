@@ -1,14 +1,18 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Boost;
+import MastodonTypes.MediaAttachment;
 import MastodonTypes.Status;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
+import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -91,12 +95,59 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         Status s = holder.data;
         Boost sb = s.getReblog();
 
+        if (BuildConfig.DEBUG) {
+            if (s.getMediaAttachments().size() > 0) {
+                Log.d(TAG, "onBindViewHolder: found status with media attachments!");
+                s.getMediaAttachments().forEach(
+                        mediaAttachment -> Log.d(TAG, "media: \t" + mediaAttachment.getPreviewUrl())
+                );
+            }
+
+            if (sb != null && sb.getMediaAttachments().size() > 0) {
+                Log.d(TAG, "onBindViewHolder: found status with boost, and media attachments!");
+                s.getMediaAttachments().forEach(
+                        mediaAttachment -> Log.d(TAG, "media: \t" + mediaAttachment.getPreviewUrl())
+                );
+            }
+        }
+
+        if (s.getMediaAttachments().size() > 0 && !holder.hasAlreadyMediaSet) {
+            holder.mainContentLayout.addView(setupMediaRecyclerView(s.getMediaAttachments()));
+            holder.hasAlreadyMediaSet = true;
+        } else if (sb != null && sb.getMediaAttachments().size() > 0 && !holder.hasAlreadyMediaSet) {
+            holder.mainContentLayout.addView(setupMediaRecyclerView(s.getReblog().getMediaAttachments()));
+            holder.hasAlreadyMediaSet = true;
+        } else {
+            holder.mainContentLayout.addView(setupMediaRecyclerView(new RealmList<MediaAttachment>()));
+            holder.hasAlreadyMediaSet = true;
+        }
+
         if (s.getThisIsABoost()) { // this is a boost
             setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText());
         } else {
             setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder, s.getSpoilerText());
         }
 
+    }
+
+    private RecyclerView setupMediaRecyclerView(RealmList<MediaAttachment> m) {
+        RecyclerView r = new RecyclerView(parentCtx);
+
+        m.forEach(ma -> Log.d(TAG, "setupMediaRecyclerView: id -> " + ma.getId() + " prevurl -> " + ma.getPreviewUrl()));
+
+        if (m.size() > 0) {
+            RecyclerView.LayoutParams rp = new RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT);
+            rp.setMargins(0, 0, 0, 16);
+            rp.setMarginStart(35);
+            rp.setMarginEnd(35);
+            r.setLayoutParams(rp);
+
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(parentCtx, 2);
+            gridLayoutManager.setSpanCount(m.size());
+            r.setLayoutManager(gridLayoutManager);
+            r.setAdapter(new MediaAttachmentsAdapter(parentCtx, m));
+        }
+        return r;
     }
 
     @Override
