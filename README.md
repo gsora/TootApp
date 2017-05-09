@@ -1,7 +1,7 @@
 # Open source libraries used
 
  + https://github.com/frankiesardo/icepick
- + https://github.com/sephiroth74/Material-BottomNavigation
+ + https://github.com/roughike/BottomBar
  + https://github.com/JakeWharton/butterknife
  + https://github.com/GrenderG/Toasty
  + https://square.github.io/retrofit/
