@@ -124,7 +124,7 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                                     (Response<Status> s) -> {
                                         Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
                                         r.executeTransaction((Realm re) -> {
-                                            re.insertOrUpdate(s.body());
+                                            data.setFavourited(false);
                                         });
                                         r.close();
                                         star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_black_24dp));
@@ -139,7 +139,7 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                                     (Response<Status> s) -> {
                                         Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
                                         r.executeTransaction((Realm re) -> {
-                                            re.insertOrUpdate(s.body());
+                                            data.setFavourited(true);
                                         });
                                         r.close();
                                         star.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_stars_yellow_600_24dp));
@@ -158,7 +158,10 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                                     (Response<Status> s) -> {
                                         Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
                                         r.executeTransaction((Realm re) -> {
-                                            re.insertOrUpdate(s.body());
+                                            Status statusToUpdate = re.where(Status.class).equalTo("id", s.body().getId()).findFirst();
+                                            if (statusToUpdate != null) {
+                                                data.setReblogged(false);
+                                            }
                                         });
                                         r.close();
                                         boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_black_24dp));
@@ -173,7 +176,10 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
                                     (Response<Status> s) -> {
                                         Realm r = RealmBuilder.getRealmForTimelineContent(timelineContent);
                                         r.executeTransaction((Realm re) -> {
-                                            re.insertOrUpdate(s.body());
+                                            Status statusToUpdate = re.where(Status.class).equalTo("id", s.body().getId()).findFirst();
+                                            if (statusToUpdate != null) {
+                                                data.setReblogged(true);
+                                            }
                                         });
                                         r.close();
                                         boost.setImageDrawable(ContextCompat.getDrawable(parentCtx, R.drawable.ic_autorenew_blue_500_24dp));

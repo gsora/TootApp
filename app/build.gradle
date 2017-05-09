@@ -25,7 +25,6 @@ android {
 
         //noinspection GroovyMissingReturnStatement
         debug {
-            applicationIdSuffix ".debug." + getVersionName()
             versionNameSuffix ".debug." + getVersionName()
         }
 
