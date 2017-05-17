@@ -75,8 +75,8 @@
 
                 </RelativeLayout>
 
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                              android:id="@+id/mainContentLayout"
+                <LinearLayout
+                    android:id="@+id/mainContentLayout"
                               android:layout_width="match_parent"
                               android:layout_height="match_parent"
                               android:background="@color/whiteClear"
@@ -93,7 +93,87 @@
                         android:text=""
                         android:textSize="16sp"/>
 
+                    <LinearLayout
+                        android:id="@+id/masterImageContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:id="@+id/imageContainerFirst"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:orientation="horizontal"
+                            tools:ignore="Suspicious0dp">
+
+                            <com.makeramen.roundedimageview.RoundedImageView
+                                android:id="@+id/firstImage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="85dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="3dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_weight="1"
+                                android:scaleType="centerCrop"
+                                app:riv_border_color="#90909090"
+                                app:riv_border_width="2dp"
+                                app:riv_corner_radius="5dp"/>
+
+                            <com.makeramen.roundedimageview.RoundedImageView
+                                android:id="@+id/secondImage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="85dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_weight="1"
+                                android:scaleType="centerCrop"
+                                app:riv_border_color="#90909090"
+                                app:riv_border_width="2dp"
+                                app:riv_corner_radius="5dp"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/imageContainerSecond"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:orientation="horizontal"
+                            tools:ignore="Suspicious0dp">
+
+                            <com.makeramen.roundedimageview.RoundedImageView
+                                android:id="@+id/thirdImage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="85dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="3dp"
+                                android:layout_marginStart="16dp"
+                                android:layout_weight="1"
+                                android:scaleType="centerCrop"
+                                app:riv_border_color="#90909090"
+                                app:riv_border_width="2dp"
+                                app:riv_corner_radius="5dp"/>
+
+                            <com.makeramen.roundedimageview.RoundedImageView
+                                android:id="@+id/fourthImage"
+                                android:layout_width="wrap_content"
+                                android:layout_height="85dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginStart="3dp"
+                                android:layout_marginTop="3dp"
+                                android:layout_weight="1"
+                                android:scaleType="centerCrop"
+                                app:riv_border_color="#90909090"
+                                app:riv_border_width="2dp"
+                                app:riv_corner_radius="5dp"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
                 </LinearLayout>
+
+
             </LinearLayout>
 
 

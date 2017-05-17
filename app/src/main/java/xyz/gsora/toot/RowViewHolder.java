@@ -10,10 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.*;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -48,7 +45,6 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     public @BindView(R.id.timestamp)
     TextView timestamp;
     public Timeline.TimelineContent timelineContent;
-    public boolean hasAlreadyMediaSet;
     // each data item is just a string in this case
     @BindView(R.id.status_author)
     TextView statusAuthor;
@@ -79,9 +75,39 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
     @Nullable
     @BindView(R.id.boost)
     ImageButton boost;
+
     @Nullable
     @BindView(R.id.mainContentLayout)
     LinearLayout mainContentLayout;
+
+    @Nullable
+    @BindView(R.id.masterImageContainer)
+    LinearLayout masterImageContainer;
+
+    @Nullable
+    @BindView(R.id.imageContainerFirst)
+    LinearLayout imageContainerFirst;
+
+    @Nullable
+    @BindView(R.id.imageContainerSecond)
+    LinearLayout imageContainerSecond;
+
+    @Nullable
+    @BindView(R.id.firstImage)
+    ImageView firstImage;
+
+    @Nullable
+    @BindView(R.id.secondImage)
+    ImageView secondImage;
+
+    @Nullable
+    @BindView(R.id.thirdImage)
+    ImageView thirdImage;
+
+    @Nullable
+    @BindView(R.id.fourthImage)
+    ImageView fourthImage;
+
     private Context parentCtx;
     private Mastodon m;
     @SuppressWarnings("unused")
@@ -97,7 +123,6 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
         super(v);
         m = Mastodon.getInstance();
         this.timelineContent = timelineContent;
-        hasAlreadyMediaSet = false;
         data = null;
         dataNotification = null;
         this.type = type;
@@ -236,6 +261,7 @@ public class RowViewHolder extends RecyclerView.ViewHolder {
 
             });
         }
+
 
     }
 
