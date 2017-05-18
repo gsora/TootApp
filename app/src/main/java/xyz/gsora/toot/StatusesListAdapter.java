@@ -1,6 +1,7 @@
 package xyz.gsora.toot;
 
 import MastodonTypes.Boost;
+import MastodonTypes.MediaAttachment;
 import MastodonTypes.Status;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
+import io.realm.RealmList;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -108,90 +110,12 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
             }
         }
 
-        if (s.getMediaAttachments().size() > 0) {
-            toggleMasterMediaContainerHeight(holder, true);
-            for (int i = 0; i < s.getMediaAttachments().size(); i++) {
-                putImageInContainer(s.getMediaAttachments().get(i).getPreviewUrl(), i, holder);
-            }
-        } else if (sb != null && sb.getMediaAttachments().size() > 0) {
-            toggleMasterMediaContainerHeight(holder, true);
-            for (int i = 0; i < sb.getMediaAttachments().size(); i++) {
-                putImageInContainer(sb.getMediaAttachments().get(i).getPreviewUrl(), i, holder);
-            }
-        } else {
-            toggleMasterMediaContainerHeight(holder, false);
-        }
-
         if (s.getThisIsABoost()) { // this is a boost
-            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText());
+            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText(), ((sb.getMediaAttachments() != null) ? sb.getMediaAttachments() : null));
         } else {
-            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder, s.getSpoilerText());
+            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder, s.getSpoilerText(), ((s.getMediaAttachments() != null) ? s.getMediaAttachments() : null));
         }
 
-    }
-
-    private void toggleMasterMediaContainerHeight(RowViewHolder holder, boolean makeVisible) {
-        LinearLayout.LayoutParams l = (LinearLayout.LayoutParams) holder.masterImageContainer.getLayoutParams();
-        Log.d(TAG, "toggleMasterMediaContainerHeight: called, height ->" + l.height);
-
-        if (makeVisible && l.height != LinearLayout.LayoutParams.WRAP_CONTENT) {
-            l.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        } else {
-            l.height = 0;
-        }
-        holder.masterImageContainer.setLayoutParams(l);
-    }
-
-    private void showFirstMediaContainer(RowViewHolder holder) {
-        LinearLayout.LayoutParams l = (LinearLayout.LayoutParams) holder.imageContainerFirst.getLayoutParams();
-        l.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        holder.imageContainerFirst.setLayoutParams(l);
-    }
-
-    private void showSecondMediaContainer(RowViewHolder holder) {
-        LinearLayout.LayoutParams l = (LinearLayout.LayoutParams) holder.imageContainerSecond.getLayoutParams();
-        l.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        holder.imageContainerSecond.setLayoutParams(l);
-    }
-
-    private void putImageInContainer(String url, int index, RowViewHolder holder) {
-        if (index == 0) {
-            showFirstMediaContainer(holder);
-        }
-
-        if (index == 2) {
-            showSecondMediaContainer(holder);
-        }
-        switch (index) {
-            case 0:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.firstImage);
-                break;
-            case 1:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.secondImage);
-                break;
-            case 2:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.thirdImage);
-                break;
-            case 3:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.fourthImage);
-                break;
-        }
     }
 
     @Override
@@ -216,7 +140,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         return TOOT;
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText) {
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText, RealmList<MediaAttachment> mediaAttachment) {
 
         // Standard setup: timestamp and avatar
         Glide
@@ -312,12 +236,92 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         }
 
 
+        // set media if any
+        if (mediaAttachment != null && mediaAttachment.size() > 0) {
+            holder.masterImageContainer.setVisibility(View.VISIBLE);
+
+            holder.imageContainerFirst.setVisibility(View.GONE);
+            holder.imageContainerSecond.setVisibility(View.GONE);
+
+            holder.firstImage.setVisibility(View.GONE);
+            holder.secondImage.setVisibility(View.GONE);
+            holder.thirdImage.setVisibility(View.GONE);
+            holder.fourthImage.setVisibility(View.GONE);
+
+            for (int i = 0; i < mediaAttachment.size(); i++) {
+                putImageInContainer(mediaAttachment.get(i).getPreviewUrl(), i, holder);
+            }
+            switch (mediaAttachment.size() - 1) {
+                case 0:
+                case 1:
+                    holder.imageContainerFirst.setVisibility(View.VISIBLE);
+                    break;
+                case 2:
+                case 3:
+                    holder.imageContainerFirst.setVisibility(View.VISIBLE);
+                    holder.imageContainerSecond.setVisibility(View.VISIBLE);
+                    break;
+            }
+        } else {
+            holder.masterImageContainer.setVisibility(View.GONE);
+        }
+
+
+    }
+
+    private void hideFirstMediaContainer(RowViewHolder holder) {
+        LinearLayout.LayoutParams l = (LinearLayout.LayoutParams) holder.imageContainerFirst.getLayoutParams();
+        l.height = 0;
+        holder.imageContainerFirst.setLayoutParams(l);
+    }
+
+    private void hideSecondMediaContainer(RowViewHolder holder) {
+        LinearLayout.LayoutParams l = (LinearLayout.LayoutParams) holder.imageContainerSecond.getLayoutParams();
+        l.height = 0;
+        holder.imageContainerSecond.setLayoutParams(l);
+    }
+
+    private void putImageInContainer(String url, int index, RowViewHolder holder) {
+        switch (index) {
+            case 0:
+                Glide
+                        .with(parentCtx)
+                        .load(url)
+                        .crossFade()
+                        .into(holder.firstImage);
+                holder.firstImage.setVisibility(View.VISIBLE);
+                break;
+            case 1:
+                Glide
+                        .with(parentCtx)
+                        .load(url)
+                        .crossFade()
+                        .into(holder.secondImage);
+                holder.secondImage.setVisibility(View.VISIBLE);
+                break;
+            case 2:
+                Glide
+                        .with(parentCtx)
+                        .load(url)
+                        .crossFade()
+                        .into(holder.thirdImage);
+                holder.thirdImage.setVisibility(View.VISIBLE);
+                break;
+            case 3:
+                Glide
+                        .with(parentCtx)
+                        .load(url)
+                        .crossFade()
+                        .into(holder.fourthImage);
+                holder.fourthImage.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
     @Override
     public long getItemId(int index) {
-        return getItem(index).getId();
+        return index;
     }
 
 }
