@@ -1,8 +1,12 @@
 package xyz.gsora.toot;
 
+import MastodonTypes.Account;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,7 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.roughike.bottombar.BottomBar;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
+import xyz.gsora.toot.Mastodon.Mastodon;
+import xyz.gsora.toot.Mastodon.ToastMaker;
 
 public class TimelineFragmentContainer extends AppCompatActivity {
 
@@ -93,6 +106,28 @@ public class TimelineFragmentContainer extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.settings_menu_timeline, menu);
         @SuppressWarnings("unused") MenuItem toot_settings_button = menu.findItem(R.id.toot_settings_button);
 
+
+        Mastodon.getInstance().getLoggedUserInfo()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(
+                        (Response<Account> response) -> Glide.with(this)
+                                .load(response.body().getAvatar())
+                                .asBitmap()
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .placeholder(R.drawable.missingavatar)
+                                .into(new SimpleTarget<Bitmap>(65, 65) {
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                                        RoundedBitmapDrawable circularBitmapDrawable =
+                                                RoundedBitmapDrawableFactory.create(TimelineFragmentContainer.this.getResources(), resource);
+                                        circularBitmapDrawable.setCircular(true);
+                                        toot_settings_button.setIcon(circularBitmapDrawable);
+                                    }
+                                }),
+                        this::errorAccountInfo
+                );
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -117,6 +152,10 @@ public class TimelineFragmentContainer extends AppCompatActivity {
                     break;
             }
         });
+    }
+
+    private void errorAccountInfo(Throwable error) {
+        ToastMaker.buildToasty(this, error.toString());
     }
 
 }

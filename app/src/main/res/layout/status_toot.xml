@@ -101,8 +101,7 @@
 
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
-                        android:orientation="vertical"
-                        >
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:id="@+id/imageContainerFirst"
@@ -121,8 +120,8 @@
                                 android:scaleType="centerCrop"
                                 android:visibility="gone"
                                 app:riv_border_color="#90909090"
-                                app:riv_border_width="2dp"
-                                app:riv_corner_radius="5dp"/>
+                                app:riv_border_width="1dp"
+                                app:riv_corner_radius="2dp"/>
 
                             <com.makeramen.roundedimageview.RoundedImageView
                                 android:id="@+id/secondImage"
@@ -134,8 +133,8 @@
                                 android:scaleType="centerCrop"
                                 android:visibility="gone"
                                 app:riv_border_color="#90909090"
-                                app:riv_border_width="2dp"
-                                app:riv_corner_radius="5dp"/>
+                                app:riv_border_width="1dp"
+                                app:riv_corner_radius="2dp"/>
                         </LinearLayout>
 
                         <LinearLayout
@@ -156,8 +155,8 @@
                                 android:scaleType="centerCrop"
                                 android:visibility="gone"
                                 app:riv_border_color="#90909090"
-                                app:riv_border_width="2dp"
-                                app:riv_corner_radius="5dp"/>
+                                app:riv_border_width="1dp"
+                                app:riv_corner_radius="2dp"/>
 
                             <com.makeramen.roundedimageview.RoundedImageView
                                 android:id="@+id/fourthImage"
@@ -169,8 +168,8 @@
                                 android:scaleType="centerCrop"
                                 android:visibility="gone"
                                 app:riv_border_color="#90909090"
-                                app:riv_border_width="2dp"
-                                app:riv_corner_radius="5dp"/>
+                                app:riv_border_width="1dp"
+                                app:riv_corner_radius="2dp"/>
                         </LinearLayout>
 
                     </LinearLayout>

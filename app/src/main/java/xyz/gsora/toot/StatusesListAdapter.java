@@ -4,11 +4,14 @@ import MastodonTypes.Boost;
 import MastodonTypes.MediaAttachment;
 import MastodonTypes.Status;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 import io.realm.RealmList;
@@ -111,9 +114,9 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         }
 
         if (s.getThisIsABoost()) { // this is a boost
-            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText(), ((sb.getMediaAttachments() != null) ? sb.getMediaAttachments() : null));
+            setStatusViewTo(sb.getAccount().getDisplayName(), sb.getContent(), sb.getAccount().getAvatar(), s.getAccount().getDisplayName(), sb.getCreatedAt(), holder, sb.getSpoilerText(), sb.getMediaAttachments(), sb.getSensitive());
         } else {
-            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder, s.getSpoilerText(), ((s.getMediaAttachments() != null) ? s.getMediaAttachments() : null));
+            setStatusViewTo(s.getAccount().getDisplayName(), s.getContent(), s.getAccount().getAvatar(), null, s.getCreatedAt(), holder, s.getSpoilerText(), s.getMediaAttachments(), s.getSensitive());
         }
 
     }
@@ -140,7 +143,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         return TOOT;
     }
 
-    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText, RealmList<MediaAttachment> mediaAttachment) {
+    private void setStatusViewTo(String author, String content, String avatar, String booster, String timestamp, RowViewHolder holder, String spoilerText, RealmList<MediaAttachment> mediaAttachment, boolean sensitiveContent) {
 
         // Standard setup: timestamp and avatar
         Glide
@@ -186,7 +189,6 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
 
         // status author, and status
         holder.statusAuthor.setText(CoolHtml.html(author));
-        holder.status.setText(CoolHtml.html(content));
 
         // if holder.boostAuthor != null, set it
         if (holder.boostAuthor != null) {
@@ -249,7 +251,7 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
             holder.fourthImage.setVisibility(View.GONE);
 
             for (int i = 0; i < mediaAttachment.size(); i++) {
-                putImageInContainer(mediaAttachment.get(i).getPreviewUrl(), i, holder);
+                putImageInContainer(mediaAttachment.get(i).getPreviewUrl(), i, holder, sensitiveContent);
             }
             switch (mediaAttachment.size() - 1) {
                 case 0:
@@ -266,6 +268,8 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
             holder.masterImageContainer.setVisibility(View.GONE);
         }
 
+        holder.status.setText(CoolHtml.html(content));
+
 
     }
 
@@ -281,39 +285,32 @@ public class StatusesListAdapter extends RealmRecyclerViewAdapter<Status, RowVie
         holder.imageContainerSecond.setLayoutParams(l);
     }
 
-    private void putImageInContainer(String url, int index, RowViewHolder holder) {
+    private void setImageOrSensitive(String url, ImageView imageView, boolean sensitiveContent) {
+        if (!sensitiveContent) {
+            Glide
+                    .with(parentCtx)
+                    .load(url)
+                    .crossFade()
+                    .into(imageView);
+        } else {
+            imageView.setImageDrawable(new ColorDrawable(Color.GRAY));
+        }
+        imageView.setVisibility(View.VISIBLE);
+    }
+
+    private void putImageInContainer(String url, int index, RowViewHolder holder, boolean sensitiveContent) {
         switch (index) {
             case 0:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.firstImage);
-                holder.firstImage.setVisibility(View.VISIBLE);
+                setImageOrSensitive(url, holder.firstImage, sensitiveContent);
                 break;
             case 1:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.secondImage);
-                holder.secondImage.setVisibility(View.VISIBLE);
+                setImageOrSensitive(url, holder.secondImage, sensitiveContent);
                 break;
             case 2:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.thirdImage);
-                holder.thirdImage.setVisibility(View.VISIBLE);
+                setImageOrSensitive(url, holder.thirdImage, sensitiveContent);
                 break;
             case 3:
-                Glide
-                        .with(parentCtx)
-                        .load(url)
-                        .crossFade()
-                        .into(holder.fourthImage);
-                holder.fourthImage.setVisibility(View.VISIBLE);
+                setImageOrSensitive(url, holder.fourthImage, sensitiveContent);
                 break;
         }
     }

@@ -1,9 +1,6 @@
 package xyz.gsora.toot.Mastodon;
 
-import MastodonTypes.AppCreationResponse;
-import MastodonTypes.Notification;
-import MastodonTypes.OAuthResponse;
-import MastodonTypes.Status;
+import MastodonTypes.*;
 import io.reactivex.Observable;
 import retrofit2.Response;
 import retrofit2.http.*;
@@ -114,4 +111,10 @@ public interface API {
             @Header("Authorization") String authBearer,
             @Path("statusId") String statusId
     );
+
+    @GET("api/v1/accounts/verify_credentials")
+    Observable<Response<Account>> getLoggedUserInfo(
+            @Header("Authorization") String authBearer
+    );
 }
+

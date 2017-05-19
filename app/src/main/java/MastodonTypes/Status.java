@@ -140,6 +140,9 @@ public class Status extends RealmObject implements Serializable {
     }
 
     public Boolean getSensitive() {
+        if (sensitive == null) {
+            return false;
+        }
         return sensitive;
     }
 

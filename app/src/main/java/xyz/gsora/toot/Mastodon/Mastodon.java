@@ -1,9 +1,6 @@
 package xyz.gsora.toot.Mastodon;
 
-import MastodonTypes.AppCreationResponse;
-import MastodonTypes.Notification;
-import MastodonTypes.OAuthResponse;
-import MastodonTypes.Status;
+import MastodonTypes.*;
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -113,6 +110,17 @@ public class Mastodon {
                 "authorization_code",
                 code,
                 SCOPES
+        );
+    }
+
+    /**
+     * Returns information about current logged user
+     *
+     * @return {@link Response<Account>} containing information about the current logged user
+     */
+    public Observable<Response<Account>> getLoggedUserInfo() {
+        return buildRxRetrofit().create(API.class).getLoggedUserInfo(
+                Toot.buildBearer()
         );
     }
 

@@ -4,8 +4,7 @@
 
     <item
         android:id="@+id/toot_settings_button"
-        android:icon="@drawable/ic_settings_white_24dp"
-        android:title="@string/settings"
+        android:title=""
         app:showAsAction="ifRoom"/>
 
 </menu>
